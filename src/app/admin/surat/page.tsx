@@ -18,6 +18,7 @@ import {
   Check,
   X,
   FileCheck,
+  ArrowLeft,
 } from "lucide-react";
 import { maskNik, formatDate } from "@/lib/utils";
 
@@ -50,6 +51,19 @@ export default function AdminSuratPage() {
   const [letterToReject, setLetterToReject] = useState<LetterRequest | null>(null);
   const [rejectionNote, setRejectionNote] = useState("");
   const [actionNotice, setActionNotice] = useState<string | null>(null);
+
+  // Keyboard shortcut Esc to close preview
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setPreviewLetter(null);
+        setCreateModalOpen(false);
+        setRejectModalOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const filteredLetters = letterRequests.filter((l) => {
     const matchStatus = selectedStatus === "ALL" || l.status === selectedStatus;
@@ -420,30 +434,41 @@ export default function AdminSuratPage() {
 
       {/* Modal Preview Surat Resmi (Format Standar Administrasi Indonesia) */}
       {previewLetter && (
-        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 sm:p-10 shadow-2xl border border-slate-200 space-y-6 my-8">
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm overflow-y-auto p-2 sm:p-6 flex justify-center items-start">
+          {/* Backdrop Click Area */}
+          <div
+            className="fixed inset-0 cursor-pointer"
+            onClick={() => setPreviewLetter(null)}
+            aria-label="Tutup Modal"
+          />
+
+          <div className="relative bg-white rounded-3xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden my-2 sm:my-6 z-10 animate-in zoom-in-95">
             
-            {/* Modal Controls */}
-            <div className="no-print flex items-center justify-between border-b border-slate-200 pb-4">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
-                <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-                  Dokumen Surat Pengantar Resmi
-                </span>
-              </div>
+            {/* Sticky Top Navigation Bar (Always Visible) */}
+            <div className="no-print sticky top-0 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 sm:px-6 py-3.5 flex items-center justify-between z-30 shadow-sm">
+              <button
+                type="button"
+                onClick={() => setPreviewLetter(null)}
+                className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors shadow-sm"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>← Tutup & Kembali</span>
+              </button>
+
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => window.print()}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-xs shadow flex items-center gap-1.5"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow flex items-center gap-1.5 transition-transform active:scale-95"
                 >
                   <Printer className="w-4 h-4" />
-                  <span>Cetak / Cetak ke PDF</span>
+                  <span>Cetak / Cetak PDF</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setPreviewLetter(null)}
-                  className="p-2 text-slate-400 hover:text-slate-700 font-bold"
+                  className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-600 font-bold flex items-center justify-center transition-colors text-sm"
+                  aria-label="Tutup"
                 >
                   ✕
                 </button>
@@ -451,7 +476,7 @@ export default function AdminSuratPage() {
             </div>
 
             {/* Letter Paper Body */}
-            <div className="letter-paper bg-white p-4 sm:p-8 text-slate-900 font-serif leading-relaxed text-xs sm:text-sm">
+            <div className="letter-paper bg-white p-6 sm:p-10 text-slate-900 font-serif leading-relaxed text-xs sm:text-sm">
               
               {/* Kop Surat Resmi */}
               <div className="text-center border-b-4 border-double border-slate-900 pb-4 space-y-0.5">
@@ -559,6 +584,30 @@ export default function AdminSuratPage() {
 
               </div>
 
+            </div>
+
+            {/* Bottom Action Footer Bar */}
+            <div className="no-print p-4 sm:p-6 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+              <div className="text-xs text-slate-500 font-mono">
+                Kode Resi: <strong className="text-slate-800">{previewLetter.trackingCode}</strong>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPreviewLetter(null)}
+                  className="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs rounded-xl transition-colors"
+                >
+                  ✕ Tutup Pratinjau
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow flex items-center gap-1.5 transition-transform active:scale-95"
+                >
+                  <Printer className="w-4 h-4" />
+                  <span>Cetak Dokumen Resmi</span>
+                </button>
+              </div>
             </div>
 
           </div>
