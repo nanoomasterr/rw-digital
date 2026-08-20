@@ -287,10 +287,58 @@ export default function KependudukanPage() {
         </div>
       </div>
 
-      {/* Table Display */}
+      {/* Table & Mobile Card Display */}
       {activeTab === "warga" ? (
         <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
+          {/* Mobile Card Feed (< md) */}
+          <div className="block md:hidden divide-y divide-slate-100">
+            {filteredResidents.map((res) => {
+              const birthYear = parseInt(res.birthDate.slice(0, 4), 10);
+              const age = isNaN(birthYear) ? "-" : 2026 - birthYear;
+              const rtData = rts.find((r) => r.id === res.rtId);
+
+              return (
+                <div key={res.id} className="p-4 space-y-2.5 hover:bg-slate-50/70 transition-colors">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h3 className="font-extrabold text-slate-900 text-sm">{res.fullName}</h3>
+                      <p className="font-mono text-xs text-slate-500 mt-0.5">
+                        {showFullNik ? res.nik : maskNik(res.nik)}
+                      </p>
+                    </div>
+                    <span
+                      className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${
+                        res.status === "TETAP"
+                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                          : "bg-amber-50 text-amber-700 border border-amber-200"
+                      }`}
+                    >
+                      {res.status}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-600">
+                    <span className="font-semibold bg-slate-100 px-2 py-0.5 rounded text-slate-700">
+                      RT {rtData?.rtNumber || "001"}
+                    </span>
+                    <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-700">
+                      {res.gender === "L" ? "Laki-laki" : "Perempuan"} • {age} thn
+                    </span>
+                    <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-700">
+                      {res.familyRole.replace(/_/g, " ")}
+                    </span>
+                  </div>
+
+                  <div className="text-xs text-slate-500 pt-0.5">
+                    Pekerjaan: <span className="text-slate-800 font-medium">{res.occupation}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Table (>= md) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-200">
                 <tr>
@@ -348,7 +396,49 @@ export default function KependudukanPage() {
         </div>
       ) : (
         <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
+          {/* Mobile Card Feed for KK (< md) */}
+          <div className="block md:hidden divide-y divide-slate-100">
+            {filteredFamilies.map((fam) => (
+              <div key={fam.id} className="p-4 space-y-3 hover:bg-slate-50/70 transition-colors">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <h3 className="font-extrabold text-slate-900 text-sm">{fam.headOfFamilyName}</h3>
+                    <p className="font-mono text-xs text-slate-500 mt-0.5">
+                      No. KK: {showFullNik ? fam.familyCardNumber : maskFamilyCard(fam.familyCardNumber)}
+                    </p>
+                  </div>
+                  <span
+                    className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${
+                      fam.status === "TETAP"
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        : "bg-amber-50 text-amber-700 border border-amber-200"
+                    }`}
+                  >
+                    {fam.status}
+                  </span>
+                </div>
+
+                <div className="text-xs text-slate-600 space-y-1">
+                  <p>Alamat: <strong className="text-slate-800">{fam.address} ({fam.houseNumber})</strong></p>
+                  <p>Wilayah: <strong className="text-emerald-700">RT {rts.find((r) => r.id === fam.rtId)?.rtNumber || "001"}</strong> • {fam.residentCount} Jiwa</p>
+                  <p className="font-mono text-slate-500 text-[11px]">Telp: {fam.phone}</p>
+                </div>
+
+                <div className="pt-2 border-t border-slate-100 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedFamilyForDetail(fam)}
+                    className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs flex items-center justify-center gap-1"
+                  >
+                    <span>Lihat Anggota Keluarga ({fam.residentCount})</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table (>= md) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-200">
                 <tr>

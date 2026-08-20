@@ -129,13 +129,13 @@ export default function UMKMPage() {
             />
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex overflow-x-auto pb-1.5 sm:flex-wrap gap-2 no-scrollbar">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 type="button"
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                   selectedCategory === cat.id
                     ? "bg-slate-900 text-white shadow"
                     : "bg-slate-100 text-slate-600 hover:bg-slate-200"
@@ -148,7 +148,7 @@ export default function UMKMPage() {
         </div>
 
         {/* UMKM Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {filteredUMKMs.map((item) => (
             <div
               key={item.id}
@@ -194,7 +194,7 @@ export default function UMKMPage() {
 
               <div className="p-5 pt-0">
                 <a
-                  href={`https://wa.me/${item.whatsappNumber}?text=Halo%20${encodeURIComponent(item.businessName)},%20saya%20warga%20RW%2005%20ingin%20tanya%20produk%20Anda`}
+                  href={`https://wa.me/${item.whatsappNumber}?text=Halo%20${encodeURIComponent(item.businessName)},%20saya%20warga%20${encodeURIComponent(rw.name)}%20ingin%20tanya%20produk%20Anda`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors shadow-sm"
@@ -211,8 +211,8 @@ export default function UMKMPage() {
 
       {/* Modal Daftar UMKM Baru */}
       {addModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 animate-in zoom-in-95 space-y-6">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 animate-in zoom-in-95 space-y-6 max-h-[90vh] overflow-y-auto my-auto">
             
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div>

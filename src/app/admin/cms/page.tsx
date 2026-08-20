@@ -227,7 +227,60 @@ export default function AdminCMSPage() {
       {/* Tab 3: Facility Bookings */}
       {activeTab === "booking" && (
         <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
+          {/* Mobile Card Feed (< md) */}
+          <div className="block md:hidden divide-y divide-slate-100">
+            {facilityBookings.map((bk) => (
+              <div key={bk.id} className="p-4 space-y-3 hover:bg-slate-50/70 transition-colors">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <h4 className="font-extrabold text-slate-900 text-sm">{bk.facilityName}</h4>
+                    <p className="text-xs text-slate-600 font-semibold mt-0.5">
+                      {bk.applicantName} <span className="text-slate-400 font-normal">(RT {bk.rtNumber})</span>
+                    </p>
+                  </div>
+                  <span
+                    className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${
+                      bk.status === "DISETUJUI"
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        : bk.status === "DITOLAK"
+                        ? "bg-rose-50 text-rose-700 border border-rose-200"
+                        : "bg-amber-50 text-amber-700 border border-amber-200"
+                    }`}
+                  >
+                    {bk.status}
+                  </span>
+                </div>
+
+                <div className="text-xs text-slate-600 space-y-1">
+                  <p>Waktu: <strong className="text-slate-800">{bk.startDate}</strong></p>
+                  <p>Keperluan: <strong className="text-slate-800">{bk.purpose}</strong></p>
+                  <p className="font-mono text-[11px] text-slate-400">Telp: {bk.phone}</p>
+                </div>
+
+                {bk.status === "PENDING" && (
+                  <div className="pt-2 border-t border-slate-100 grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => updateBookingStatus(bk.id, "DITOLAK")}
+                      className="py-2 bg-rose-50 text-rose-700 font-semibold rounded-xl text-xs"
+                    >
+                      Tolak
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => updateBookingStatus(bk.id, "DISETUJUI")}
+                      className="py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow"
+                    >
+                      Setujui
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table (>= md) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-200">
                 <tr>

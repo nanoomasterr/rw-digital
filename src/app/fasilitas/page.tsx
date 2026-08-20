@@ -175,7 +175,37 @@ export default function FasilitasPage() {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Mobile Card Feed for Bookings (< md) */}
+          <div className="block md:hidden divide-y divide-slate-100">
+            {facilityBookings.map((bk) => (
+              <div key={bk.id} className="p-4 space-y-2 hover:bg-slate-50/70 transition-colors">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <h4 className="font-extrabold text-slate-900 text-sm">{bk.facilityName}</h4>
+                    <p className="text-xs text-slate-600 font-semibold mt-0.5">
+                      {bk.applicantName} <span className="text-slate-400 font-normal">(RT {bk.rtNumber})</span>
+                    </p>
+                  </div>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                    <CheckCircle2 className="w-3 h-3" /> Disetujui
+                  </span>
+                </div>
+
+                <div className="text-xs text-slate-600 space-y-0.5">
+                  <p className="flex items-center gap-1.5 text-slate-500 font-medium">
+                    <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                    <span>{bk.startDate}</span>
+                  </p>
+                  <p className="text-slate-700 pt-1">
+                    <strong>Keperluan:</strong> {bk.purpose}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table (>= md) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="bg-slate-50 text-xs uppercase font-semibold text-slate-500 border-b border-slate-100">
                 <tr>

@@ -260,10 +260,70 @@ export default function AdminKeuanganPage() {
         )}
       </div>
 
-      {/* Tab 1: Invoices Table */}
+      {/* Tab 1: Invoices Table & Mobile Cards */}
       {activeTab === "iuran" ? (
         <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
+          {/* Mobile Card Feed (< md) */}
+          <div className="block md:hidden divide-y divide-slate-100">
+            {filteredInvoices.map((inv) => (
+              <div key={inv.id} className="p-4 space-y-3 hover:bg-slate-50/70 transition-colors">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <span className="font-mono text-[10px] text-slate-400 font-bold block">
+                      {inv.invoiceNumber}
+                    </span>
+                    <h3 className="font-extrabold text-slate-900 text-sm">{inv.headOfFamilyName}</h3>
+                    <p className="text-xs text-slate-500">{inv.houseNumber} (RT {inv.rtNumber})</p>
+                  </div>
+                  <div>
+                    {inv.status === "LUNAS" ? (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <CheckCircle2 className="w-3 h-3" /> Lunas
+                      </span>
+                    ) : inv.status === "MENUNGGU_VERIFIKASI" ? (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                        <Clock className="w-3 h-3" /> Menunggu
+                      </span>
+                    ) : (
+                      <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                        Belum Bayar
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-xs pt-1">
+                  <span className="text-slate-500">Periode: <strong>{inv.billingPeriod}</strong></span>
+                  <span className="font-black text-sm text-slate-900">{formatCurrency(inv.totalAmount)}</span>
+                </div>
+
+                <div className="pt-2 border-t border-slate-100 flex justify-end">
+                  {inv.status === "MENUNGGU_VERIFIKASI" ? (
+                    <button
+                      type="button"
+                      onClick={() => handleVerify(inv)}
+                      className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow"
+                    >
+                      Verifikasi Lunas ({inv.paymentMethod})
+                    </button>
+                  ) : inv.status === "LUNAS" ? (
+                    <span className="text-[11px] text-slate-400 font-medium">Pembayaran Sah</span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleVerify(inv)}
+                      className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold"
+                    >
+                      Tandai Lunas
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table (>= md) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-200">
                 <tr>
@@ -338,8 +398,59 @@ export default function AdminKeuanganPage() {
         </div>
       ) : (
         /* Tab 2: Buku Kas Umum */
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
-          <div className="overflow-x-auto">
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+          {/* Mobile Card Feed for BKU (< md) */}
+          <div className="block md:hidden divide-y divide-slate-100">
+            {cashTransactions.map((tx) => (
+              <div key={tx.id} className="p-4 space-y-2 hover:bg-slate-50/70 transition-colors">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[11px] text-slate-500 font-medium">
+                      {formatDate(tx.date)}
+                    </span>
+                    <span className="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700">
+                      {tx.category.replace(/_/g, " ")}
+                    </span>
+                  </div>
+                  <div>
+                    {tx.type === "MASUK" ? (
+                      <span className="inline-flex items-center gap-0.5 font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded text-[10px]">
+                        <ArrowDownRight className="w-3 h-3" /> Masuk
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-0.5 font-bold text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded text-[10px]">
+                        <ArrowUpRight className="w-3 h-3" /> Keluar
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="font-bold text-slate-900 text-xs leading-snug">{tx.title}</p>
+                  <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
+                    {tx.description} <span className="font-mono text-[10px] text-slate-400">({tx.transactionNumber})</span>
+                  </p>
+                </div>
+
+                <div className="pt-1.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                  <div className="text-[11px] text-slate-500">
+                    Saldo: <strong className="text-slate-800">{formatCurrency(tx.balanceAfter)}</strong>
+                  </div>
+                  <div
+                    className={`font-black text-xs sm:text-sm ${
+                      tx.type === "MASUK" ? "text-emerald-600" : "text-rose-600"
+                    }`}
+                  >
+                    {tx.type === "MASUK" ? "+" : "-"}
+                    {formatCurrency(tx.amount)}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table for BKU (>= md) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-200">
                 <tr>
