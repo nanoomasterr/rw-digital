@@ -51,6 +51,7 @@ export default function AdminSuratPage() {
   const [letterToReject, setLetterToReject] = useState<LetterRequest | null>(null);
   const [rejectionNote, setRejectionNote] = useState("");
   const [actionNotice, setActionNotice] = useState<string | null>(null);
+  const searchContainerRef = React.useRef<HTMLDivElement>(null);
 
   // Keyboard shortcut Esc to close preview
   React.useEffect(() => {
@@ -59,10 +60,25 @@ export default function AdminSuratPage() {
         setPreviewLetter(null);
         setCreateModalOpen(false);
         setRejectModalOpen(false);
+        setShowResidentDropdown(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // Auto-close resident search dropdown when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target as Node)
+      ) {
+        setShowResidentDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const filteredLetters = letterRequests.filter((l) => {
@@ -651,7 +667,10 @@ export default function AdminSuratPage() {
 
             <form onSubmit={handleCreateLetter} className="space-y-4 text-xs">
               {/* Form Pencarian Cepat Data Warga */}
-              <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/90 space-y-2 relative">
+              <div
+                ref={searchContainerRef}
+                className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/90 space-y-2 relative"
+              >
                 <div className="flex items-center justify-between">
                   <label className="block font-bold text-slate-800 text-xs flex items-center gap-1.5">
                     <Search className="w-3.5 h-3.5 text-emerald-600" />
@@ -686,6 +705,7 @@ export default function AdminSuratPage() {
                       setShowResidentDropdown(true);
                     }}
                     onFocus={() => setShowResidentDropdown(true)}
+                    onClick={() => setShowResidentDropdown(true)}
                     className="w-full pl-9 pr-8 py-2 rounded-xl border border-slate-300 bg-white text-slate-900 text-xs font-medium focus:ring-2 focus:ring-emerald-500 outline-none"
                   />
                   {residentSearchQuery && (
