@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useApp } from "@/lib/store";
-import { LetterRequest, LetterStatus } from "@/types";
+import { LetterRequest, LetterStatus, LetterType } from "@/types";
 import {
   FileText,
   Search,
@@ -24,13 +24,24 @@ import { maskNik, formatDate } from "@/lib/utils";
 export default function AdminSuratPage() {
   const {
     letterRequests,
+    addLetterRequest,
     approveLetterRT,
     approveLetterRW,
     rejectLetter,
     currentRole,
     rw,
     rts,
+    residents,
+    families,
   } = useApp();
+
+  const roleLabels: Record<string, { badge: string }> = {
+    KETUA_RW: { badge: "Superadmin RW" },
+    KETUA_RT: { badge: "Admin RT 01" },
+    BENDAHARA: { badge: "Keuangan RW" },
+    PETUGAS: { badge: "Tim Lapangan" },
+    WARGA: { badge: "Warga Biasa" },
+  };
 
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
@@ -79,6 +90,86 @@ export default function AdminSuratPage() {
     setTimeout(() => setActionNotice(null), 4000);
   };
 
+  // Create Letter Modal State (Khusus RT & RW)
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [letterType, setLetterType] = useState<LetterType>("PENGANTAR_SKCK");
+  const [residentName, setResidentName] = useState("");
+  const [nik, setNik] = useState("");
+  const [familyCardNumber, setFamilyCardNumber] = useState("");
+  const [rtNumber, setRtNumber] = useState("001");
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
+  const [purpose, setPurpose] = useState("");
+  const [directApprove, setDirectApprove] = useState(true);
+
+  const isOfficer = currentRole === "KETUA_RW" || currentRole === "KETUA_RT";
+
+  const letterTypeTitles: Record<LetterType, string> = {
+    PENGANTAR_SKCK: "Surat Pengantar Pembuatan SKCK",
+    DOMISILI: "Surat Keterangan Domisili Tinggal",
+    KETERANGAN_USAHA: "Surat Keterangan Domisili Usaha (SKDU)",
+    KETERANGAN_TIDAK_MAMPU: "Surat Keterangan Tidak Mampu (SKTM)",
+    KETERANGAN_KEMATIAN: "Surat Keterangan Kematian",
+    KETERANGAN_BELUM_MENIKAH: "Surat Keterangan Belum Menikah",
+    PENGANTAR_NIKAH: "Surat Pengantar Nikah (N1-N4)",
+    IZIN_KERAMAIAN: "Surat Pengantar Izin Keramaian Acara",
+    SURAT_PENGANTAR_SKCK: "Surat Pengantar Pembuatan SKCK",
+    SURAT_KETERANGAN_USAHA: "Surat Keterangan Domisili Usaha (SKDU)",
+    SURAT_KETERANGAN_DOMISILI: "Surat Keterangan Domisili Tinggal",
+  };
+
+  const handleCreateLetter = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!residentName || !nik || !purpose || !phone) {
+      alert("Mohon lengkapi seluruh data pemohon!");
+      return;
+    }
+
+    const created = addLetterRequest({
+      letterType,
+      letterTitle: letterTypeTitles[letterType],
+      residentName,
+      nik,
+      familyCardNumber: familyCardNumber || "3277011205100001",
+      rtNumber,
+      address: address || `Jl. Kebon Rumput No. 12, RT ${rtNumber}/RW 14`,
+      phone,
+      purpose,
+    });
+
+    if (currentRole === "KETUA_RT") {
+      // RT langsung memvalidasi
+      approveLetterRT(
+        created.id,
+        "DASEP HERIANSYAH (Ketua RT 001)",
+        "Dibuat dan divalidasi langsung oleh Ketua RT 001."
+      );
+      setActionNotice(
+        `Surat ${created.trackingCode} (${residentName}) berhasil dibuat dan diteruskan ke Ketua RW.`
+      );
+    } else if (currentRole === "KETUA_RW" && directApprove) {
+      // RW langsung mengesahkan & menerbitkan
+      const randomNum = Math.floor(10 + Math.random() * 90);
+      const officialNo = `470/${String(randomNum).padStart(3, "0")}/RW.14/VIII/2026`;
+      approveLetterRT(created.id, `Ketua RT ${rtNumber}`, "Divalidasi di Sekretariat RW.");
+      approveLetterRW(created.id, rw.headName, officialNo);
+      setActionNotice(
+        `Surat ${created.trackingCode} (${residentName}) berhasil diterbitkan resmi dengan No: ${officialNo}.`
+      );
+    } else {
+      setActionNotice(`Surat ${created.trackingCode} (${residentName}) berhasil dicatat.`);
+    }
+
+    setCreateModalOpen(false);
+    setResidentName("");
+    setNik("");
+    setFamilyCardNumber("");
+    setPhone("");
+    setAddress("");
+    setPurpose("");
+    setTimeout(() => setActionNotice(null), 5000);
+  };
+
   return (
     <div className="space-y-6">
       
@@ -89,15 +180,40 @@ export default function AdminSuratPage() {
             Pelayanan E-Surat Pengantar RW/RT
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Verifikasi berjenjang RT $\rightarrow$ RW dan penerbitan dokumen surat resmi ber-QR Code legal.
+            Penerbitan resmi hanya oleh Pengurus RT & RW dengan verifikasi QR Code legal.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500">Peran Aktif:</span>
-          <span className="px-3 py-1 bg-slate-900 text-emerald-400 rounded-lg font-bold text-xs">
-            {currentRole === "KETUA_RW" ? "Ketua RW (Pengesahan Final)" : currentRole === "KETUA_RT" ? "Ketua RT (Validasi Domisili)" : "Pengurus Lingkungan"}
-          </span>
+        <div className="flex items-center gap-3">
+          {isOfficer ? (
+            <button
+              type="button"
+              onClick={() => {
+                setRtNumber(currentRole === "KETUA_RT" ? "001" : "001");
+                setCreateModalOpen(true);
+              }}
+              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow flex items-center gap-2 transition-transform active:scale-95"
+            >
+              <FileCheck className="w-4 h-4" />
+              <span>+ Buat / Terbitkan Surat Warga</span>
+            </button>
+          ) : (
+            <div className="px-3 py-2 bg-slate-100 rounded-xl text-slate-500 text-xs font-semibold flex items-center gap-1.5 border border-slate-200">
+              <ShieldCheck className="w-4 h-4 text-slate-400" />
+              <span>Akses Pembuatan: Khusus RT & RW</span>
+            </div>
+          )}
+
+          <div className="hidden sm:flex items-center gap-2">
+            <span className="text-xs text-slate-500">Peran:</span>
+            <span className="px-3 py-1 bg-slate-900 text-emerald-400 rounded-lg font-bold text-xs">
+              {currentRole === "KETUA_RW"
+                ? "Ketua RW"
+                : currentRole === "KETUA_RT"
+                ? "Ketua RT 01"
+                : roleLabels[currentRole]?.badge || "Pengurus"}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -449,40 +565,228 @@ export default function AdminSuratPage() {
         </div>
       )}
 
-      {/* Modal Tolak Surat */}
-      {rejectModalOpen && letterToReject && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
-            <h3 className="text-base font-extrabold text-slate-900">
-              Tolak Permohonan Surat
-            </h3>
-            <p className="text-xs text-slate-500">
-              Tuliskan alasan penolakan agar warga dapat melengkapi berkasnya:
-            </p>
-            <textarea
-              rows={3}
-              required
-              placeholder="Contoh: Lampiran KTP kurang jelas / Pemohon belum melengkapi surat pengantar nikah"
-              value={rejectionNote}
-              onChange={(e) => setRejectionNote(e.target.value)}
-              className="w-full p-3 rounded-xl border border-slate-300 text-xs text-slate-900 outline-none focus:ring-2 focus:ring-rose-500"
-            />
-            <div className="flex justify-end gap-2 pt-2">
+      {/* Modal Buat / Terbitkan Surat Pengantar (Khusus RT & RW) */}
+      {createModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5 my-8 animate-in zoom-in-95">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                  Otoritas: {currentRole === "KETUA_RW" ? "Pengurus RW 14" : "Pengurus RT 01"}
+                </span>
+                <h3 className="text-lg font-extrabold text-slate-900 mt-1">
+                  Penerbitan Surat Pengantar Warga
+                </h3>
+              </div>
               <button
                 type="button"
-                onClick={() => setRejectModalOpen(false)}
-                className="px-4 py-2 bg-slate-100 text-slate-700 text-xs rounded-xl"
+                onClick={() => setCreateModalOpen(false)}
+                className="p-1 text-slate-400 hover:text-slate-600 font-bold"
               >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirmReject}
-                className="px-4 py-2 bg-rose-600 text-white font-bold text-xs rounded-xl shadow"
-              >
-                Konfirmasi Tolak
+                ✕
               </button>
             </div>
+
+            <form onSubmit={handleCreateLetter} className="space-y-4 text-xs">
+              {/* Quick Pick from registered residents */}
+              <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80">
+                <label className="block font-bold text-slate-700 mb-1">
+                  Pilih Cepat dari Data Warga Terdaftar (Opsional):
+                </label>
+                <select
+                  onChange={(e) => {
+                    const res = residents.find((r) => r.id === e.target.value);
+                    if (res) {
+                      setResidentName(res.fullName);
+                      setNik(res.nik);
+                      const fam = families.find((f) => f.id === res.familyId);
+                      if (fam) {
+                        setFamilyCardNumber(fam.familyCardNumber);
+                        setAddress(fam.address);
+                      }
+                      const rtObj = rts.find((rt) => rt.id === res.rtId);
+                      if (rtObj) {
+                        setRtNumber(rtObj.rtNumber);
+                      }
+                      setPhone(res.phone || "081234567890");
+                    }
+                  }}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-slate-900 font-medium"
+                >
+                  <option value="">-- Ketik manual atau pilih warga --</option>
+                  {residents.map((res) => {
+                    const rtObj = rts.find((rt) => rt.id === res.rtId);
+                    return (
+                      <option key={res.id} value={res.id}>
+                        {res.fullName} (NIK: {res.nik}) - RT {rtObj ? rtObj.rtNumber : "01"}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
+              {/* Jenis Surat */}
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Jenis Surat Pengantar <span className="text-rose-500">*</span>
+                </label>
+                <select
+                  value={letterType}
+                  onChange={(e) => setLetterType(e.target.value as LetterType)}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-slate-900 font-semibold"
+                >
+                  {Object.entries(letterTypeTitles).map(([key, title]) => (
+                    <option key={key} value={key}>
+                      {title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Data Pemohon */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    Nama Lengkap Pemohon <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Contoh: Dimas Aditya Hartono"
+                    value={residentName}
+                    onChange={(e) => setResidentName(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    NIK (16 Digit KTP) <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={16}
+                    placeholder="Contoh: 3277012005950001"
+                    value={nik}
+                    onChange={(e) => setNik(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    Nomor Kartu Keluarga (KK)
+                  </label>
+                  <input
+                    type="text"
+                    maxLength={16}
+                    placeholder="Contoh: 3277011205100001"
+                    value={familyCardNumber}
+                    onChange={(e) => setFamilyCardNumber(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    Wilayah RT <span className="text-rose-500">*</span>
+                  </label>
+                  <select
+                    value={rtNumber}
+                    onChange={(e) => setRtNumber(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white"
+                  >
+                    {rts.map((rt) => (
+                      <option key={rt.id} value={rt.rtNumber}>
+                        RT {rt.rtNumber} - Ketua: {rt.headName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    No. WhatsApp Pemohon <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="Contoh: 081234567890"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    Alamat Domisili <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Contoh: Jl. Kebon Rumput No. 12"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Maksud / Keperluan Pengantar <span className="text-rose-500">*</span>
+                </label>
+                <textarea
+                  rows={2}
+                  required
+                  placeholder="Contoh: Persyaratan Melamar Pekerjaan BUMN / CPNS di Kementerian"
+                  value={purpose}
+                  onChange={(e) => setPurpose(e.target.value)}
+                  className="w-full p-2.5 rounded-xl border border-slate-300"
+                />
+              </div>
+
+              {/* Opsi Pengesahan Langsung untuk RW */}
+              {currentRole === "KETUA_RW" && (
+                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="directApprove"
+                    checked={directApprove}
+                    onChange={(e) => setDirectApprove(e.target.checked)}
+                    className="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4"
+                  />
+                  <label htmlFor="directApprove" className="font-semibold text-emerald-900 text-xs">
+                    Langsung Sahkan & Terbitkan Nomor Surat Resmi (QR Code Aktif)
+                  </label>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setCreateModalOpen(false)}
+                  className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-xl"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow flex items-center gap-1.5"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>
+                    {currentRole === "KETUA_RW"
+                      ? "Terbitkan Surat Resmi"
+                      : "Validasi & Ajukan ke Ketua RW"}
+                  </span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
