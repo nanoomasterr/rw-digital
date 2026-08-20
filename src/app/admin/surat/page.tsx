@@ -106,6 +106,10 @@ export default function AdminSuratPage() {
 
   // Create Letter Modal State (Khusus RT & RW)
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [residentSearchQuery, setResidentSearchQuery] = useState("");
+  const [showResidentDropdown, setShowResidentDropdown] = useState(false);
+  const [selectedResidentId, setSelectedResidentId] = useState<string | null>(null);
+
   const [letterType, setLetterType] = useState<LetterType>("PENGANTAR_SKCK");
   const [residentName, setResidentName] = useState("");
   const [nik, setNik] = useState("");
@@ -117,6 +121,39 @@ export default function AdminSuratPage() {
   const [directApprove, setDirectApprove] = useState(true);
 
   const isOfficer = currentRole === "KETUA_RW" || currentRole === "KETUA_RT";
+
+  // Filtered residents for live search
+  const filteredResidentOptions = residents.filter((r) => {
+    if (!residentSearchQuery.trim()) return true;
+    const q = residentSearchQuery.toLowerCase().trim();
+    const fam = families.find((f) => f.id === r.familyId);
+    const rtObj = rts.find((rt) => rt.id === r.rtId);
+    return (
+      r.fullName.toLowerCase().includes(q) ||
+      r.nik.includes(q) ||
+      (fam && fam.familyCardNumber.includes(q)) ||
+      (rtObj && rtObj.rtNumber.includes(q)) ||
+      (fam && fam.address.toLowerCase().includes(q))
+    );
+  });
+
+  const handleSelectResident = (res: (typeof residents)[0]) => {
+    setResidentName(res.fullName);
+    setNik(res.nik);
+    const fam = families.find((f) => f.id === res.familyId);
+    if (fam) {
+      setFamilyCardNumber(fam.familyCardNumber);
+      setAddress(fam.address);
+    }
+    const rtObj = rts.find((rt) => rt.id === res.rtId);
+    if (rtObj) {
+      setRtNumber(rtObj.rtNumber);
+    }
+    setPhone(res.phone || "081234567890");
+    setSelectedResidentId(res.id);
+    setShowResidentDropdown(false);
+    setResidentSearchQuery("");
+  };
 
   const letterTypeTitles: Record<LetterType, string> = {
     PENGANTAR_SKCK: "Surat Pengantar Pembuatan SKCK",
@@ -613,41 +650,101 @@ export default function AdminSuratPage() {
             </div>
 
             <form onSubmit={handleCreateLetter} className="space-y-4 text-xs">
-              {/* Quick Pick from registered residents */}
-              <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80">
-                <label className="block font-bold text-slate-700 mb-1">
-                  Pilih Cepat dari Data Warga Terdaftar (Opsional):
-                </label>
-                <select
-                  onChange={(e) => {
-                    const res = residents.find((r) => r.id === e.target.value);
-                    if (res) {
-                      setResidentName(res.fullName);
-                      setNik(res.nik);
-                      const fam = families.find((f) => f.id === res.familyId);
-                      if (fam) {
-                        setFamilyCardNumber(fam.familyCardNumber);
-                        setAddress(fam.address);
-                      }
-                      const rtObj = rts.find((rt) => rt.id === res.rtId);
-                      if (rtObj) {
-                        setRtNumber(rtObj.rtNumber);
-                      }
-                      setPhone(res.phone || "081234567890");
-                    }
-                  }}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-slate-900 font-medium"
-                >
-                  <option value="">-- Ketik manual atau pilih warga --</option>
-                  {residents.map((res) => {
-                    const rtObj = rts.find((rt) => rt.id === res.rtId);
-                    return (
-                      <option key={res.id} value={res.id}>
-                        {res.fullName} (NIK: {res.nik}) - RT {rtObj ? rtObj.rtNumber : "01"}
-                      </option>
-                    );
-                  })}
-                </select>
+              {/* Form Pencarian Cepat Data Warga */}
+              <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/90 space-y-2 relative">
+                <div className="flex items-center justify-between">
+                  <label className="block font-bold text-slate-800 text-xs flex items-center gap-1.5">
+                    <Search className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Cari & Pilih Data Warga Terdaftar (Kependudukan RW 14):</span>
+                  </label>
+                  {selectedResidentId && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedResidentId(null);
+                        setResidentName("");
+                        setNik("");
+                        setFamilyCardNumber("");
+                        setAddress("");
+                        setPhone("");
+                      }}
+                      className="text-[11px] text-rose-600 hover:text-rose-700 font-bold underline"
+                    >
+                      Reset Form
+                    </button>
+                  )}
+                </div>
+
+                <div className="relative">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                  <input
+                    type="text"
+                    placeholder="Ketik Nama Warga, NIK (16 digit), No. KK, atau RT..."
+                    value={residentSearchQuery}
+                    onChange={(e) => {
+                      setResidentSearchQuery(e.target.value);
+                      setShowResidentDropdown(true);
+                    }}
+                    onFocus={() => setShowResidentDropdown(true)}
+                    className="w-full pl-9 pr-8 py-2 rounded-xl border border-slate-300 bg-white text-slate-900 text-xs font-medium focus:ring-2 focus:ring-emerald-500 outline-none"
+                  />
+                  {residentSearchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setResidentSearchQuery("");
+                        setShowResidentDropdown(false);
+                      }}
+                      className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 font-bold text-xs"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                {/* Auto-suggest Search Results Dropdown */}
+                {showResidentDropdown && (
+                  <div className="absolute left-3.5 right-3.5 top-full mt-1 bg-white rounded-2xl border border-slate-200 shadow-2xl max-h-56 overflow-y-auto z-50 p-1.5 divide-y divide-slate-100 animate-in fade-in">
+                    {filteredResidentOptions.length > 0 ? (
+                      filteredResidentOptions.slice(0, 15).map((res) => {
+                        const fam = families.find((f) => f.id === res.familyId);
+                        const rtObj = rts.find((rt) => rt.id === res.rtId);
+                        return (
+                          <button
+                            key={res.id}
+                            type="button"
+                            onClick={() => handleSelectResident(res)}
+                            className="w-full text-left p-2.5 hover:bg-emerald-50 rounded-xl transition-colors flex items-center justify-between gap-2 group"
+                          >
+                            <div className="min-w-0">
+                              <p className="font-bold text-slate-900 text-xs group-hover:text-emerald-700">{res.fullName}</p>
+                              <p className="text-[11px] text-slate-500 font-mono">
+                                NIK: {res.nik} • KK: {fam ? fam.familyCardNumber : "-"}
+                              </p>
+                              <p className="text-[10px] text-slate-400 truncate">
+                                {fam ? fam.address : `RT ${rtObj ? rtObj.rtNumber : "01"}`}
+                              </p>
+                            </div>
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-emerald-800 border border-slate-200 shrink-0">
+                              RT {rtObj ? rtObj.rtNumber : "01"}
+                            </span>
+                          </button>
+                        );
+                      })
+                    ) : (
+                      <div className="p-3 text-center text-slate-400 text-xs">
+                        Warga dengan kata kunci &quot;{residentSearchQuery}&quot; tidak ditemukan. Anda dapat mengisi formulir di bawah secara manual.
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {selectedResidentId && (
+                  <div className="p-2 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Data warga <strong>{residentName}</strong> berhasil dimuat otomatis.</span>
+                  </div>
+                )}
               </div>
 
               {/* Jenis Surat */}
