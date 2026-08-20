@@ -584,30 +584,6 @@ export default function SuratOnlinePage() {
 
             </div>
 
-            {/* Bottom Action Footer Bar */}
-            <div className="no-print p-4 sm:p-6 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
-              <div className="text-xs text-slate-500 font-mono">
-                Kode Resi: <strong className="text-slate-800">{previewLetter.trackingCode}</strong>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setPreviewLetter(null)}
-                  className="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs rounded-xl transition-colors"
-                >
-                  ✕ Tutup Pratinjau
-                </button>
-                <button
-                  type="button"
-                  onClick={() => window.print()}
-                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow flex items-center gap-1.5 transition-transform active:scale-95"
-                >
-                  <Printer className="w-4 h-4" />
-                  <span>Cetak Dokumen Resmi</span>
-                </button>
-              </div>
-            </div>
-
           </div>
         </div>
       )}
