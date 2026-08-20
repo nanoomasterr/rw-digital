@@ -314,7 +314,7 @@ export default function IuranPage() {
                   </div>
                 ) : (
                   <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2 text-xs text-slate-700">
-                    <p className="font-semibold text-slate-900">Rekening Resmi RW 05:</p>
+                    <p className="font-semibold text-slate-900">Rekening Resmi {rw.name}:</p>
                     <p>Bank: <strong>{rw.bankAccount.bankName}</strong></p>
                     <p>No. Rekening: <strong className="text-emerald-700 font-mono text-sm">{rw.bankAccount.accountNumber}</strong></p>
                     <p>Atas Nama: <strong>{rw.bankAccount.accountHolder}</strong></p>

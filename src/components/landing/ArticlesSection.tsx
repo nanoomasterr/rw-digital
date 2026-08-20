@@ -19,7 +19,7 @@ export function ArticlesSection() {
               Papan Informasi & Agenda
             </span>
             <h2 className="text-3xl font-black text-slate-900 tracking-tight mt-2">
-              Berita & Kegiatan Terkini RW 05
+              Berita & Kegiatan Terkini {rw.name}
             </h2>
             <p className="text-sm text-slate-600 mt-1">
               Ketahui agenda kerja bakti, posyandu, peringatan hari besar, dan pengumuman resmi lingkungan.

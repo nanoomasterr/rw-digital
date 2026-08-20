@@ -20,7 +20,7 @@ export function ProfileSection() {
             
             <div className="flex items-center gap-4 mb-6">
               <div className="w-16 h-16 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold text-2xl shadow-lg shrink-0">
-                BS
+                AS
               </div>
               <div>
                 <h3 className="font-extrabold text-slate-900 text-lg">
@@ -35,16 +35,16 @@ export function ProfileSection() {
 
             <div className="space-y-3 text-sm text-slate-700 leading-relaxed italic">
               <p>
-                &ldquo;Assalamu’alaikum Warahmatullahi Wabarakatuh, salam sejahtera untuk seluruh warga yang kami banggakan.
+                &ldquo;Sampurasun! Assalamu’alaikum Warahmatullahi Wabarakatuh, salam sejahtera untuk seluruh warga {rw.name} yang kami banggakan.
               </p>
               <p>
-                Portal digital RW 05 ini kami hadirkan sebagai ikhtiar bersama menuju lingkungan yang modern, guyub rukun, transparan, dan berdaya. Warga kini dapat mengurus surat pengantar kapan saja tanpa kendala jarak, melihat pertanggungjawaban kas secara terbuka, serta bergotong royong memajukan UMKM tetangga sekitar.&rdquo;
+                Portal digital {rw.name} ini kami hadirkan sebagai ikhtiar bersama menuju lingkungan yang modern, guyub rukun, transparan, dan berdaya. Warga kini dapat mengurus surat pengantar kapan saja tanpa kendala jarak, melihat pertanggungjawaban kas secara terbuka, serta bergotong royong memajukan UMKM tetangga sekitar.&rdquo;
               </p>
             </div>
 
             <div className="mt-6 pt-4 border-t border-emerald-200/60 flex items-center justify-between text-xs text-slate-500">
-              <span>Sekretariat RW 05</span>
-              <span className="font-semibold text-emerald-800">#RWSadarDigital</span>
+              <span>Sekretariat {rw.name}</span>
+              <span className="font-semibold text-emerald-800">#PadasukaJuara #RWSadarDigital</span>
             </div>
           </div>
 
@@ -55,7 +55,7 @@ export function ProfileSection() {
                 Profil Lingkungan
               </span>
               <h2 className="text-3xl font-black text-slate-900 tracking-tight mt-2">
-                Mewujudkan Lingkungan Harmonis, Aman, dan Berbasis Digital
+                Mewujudkan {rw.name} yang Harmonis, Aman, dan Berbasis Digital
               </h2>
             </div>
 
@@ -67,7 +67,7 @@ export function ProfileSection() {
                 <div>
                   <h4 className="font-bold text-slate-900 text-base">Visi Lingkungan</h4>
                   <p className="text-sm text-slate-600 mt-1 leading-relaxed">
-                    Terwujudnya Rukun Warga 05 yang religius, aman, bersih, transparan dalam tata kelola keuangan, serta unggul dalam pelayanan publik berbasis teknologi informasi.
+                    Terwujudnya {rw.name} Kelurahan Padasuka yang religius, aman, bersih, transparan dalam tata kelola keuangan, serta unggul dalam pelayanan publik berbasis teknologi informasi.
                   </p>
                 </div>
               </div>
@@ -81,7 +81,7 @@ export function ProfileSection() {
                   <ul className="mt-2 space-y-2 text-sm text-slate-600">
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                      <span>Memberikan pelayanan administrasi warga yang cepat, tepat, dan tanpa pungli.</span>
+                      <span>Memberikan pelayanan administrasi warga yang cepat, tepat, transparan, dan tanpa pungli.</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
@@ -89,7 +89,7 @@ export function ProfileSection() {
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                      <span>Mendukung pemberdayaan ekonomi lokal melalui katalog produk UMKM antar warga.</span>
+                      <span>Mendukung pemberdayaan ekonomi lokal melalui katalog produk UMKM antar warga Padasuka.</span>
                     </li>
                   </ul>
                 </div>

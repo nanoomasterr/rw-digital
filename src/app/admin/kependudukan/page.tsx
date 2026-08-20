@@ -143,7 +143,7 @@ export default function KependudukanPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `data_kependudukan_rw05_${activeTab}.csv`);
+    link.setAttribute("download", `data_kependudukan_rw14_${activeTab}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -159,7 +159,7 @@ export default function KependudukanPage() {
             Buku Induk Kependudukan & Kartu Keluarga
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Database kependudukan RW 05 untuk keperluan sensus, posyandu, bantuan sosial, dan surat pengantar.
+            Database kependudukan {rw.name} untuk keperluan sensus, posyandu, bantuan sosial, dan surat pengantar.
           </p>
         </div>
 

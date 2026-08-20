@@ -6,7 +6,7 @@ import { ShoppingBag, Star, MessageCircle, ArrowRight, Store } from "lucide-reac
 import { useApp } from "@/lib/store";
 
 export function UMKMShowcase() {
-  const { umkms } = useApp();
+  const { umkms, rw } = useApp();
 
   return (
     <section className="py-20 bg-slate-50 border-t border-slate-200">
@@ -19,7 +19,7 @@ export function UMKMShowcase() {
               Pemberdayaan Ekonomi Warga
             </div>
             <h2 className="text-3xl font-black text-slate-900 tracking-tight">
-              Pojok UMKM & Pasar Digital RW 05
+              Pojok UMKM & Pasar Digital {rw.name}
             </h2>
             <p className="text-sm text-slate-600 mt-1 max-w-xl">
               Beli dari tetangga sendiri! Temukan katering lezat, jasa servis AC, toko sembako, dan laundry terpercaya di sekitar rumah Anda.

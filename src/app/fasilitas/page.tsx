@@ -18,7 +18,7 @@ import {
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export default function FasilitasPage() {
-  const { facilities, facilityBookings, addFacilityBooking, rts } = useApp();
+  const { facilities, facilityBookings, addFacilityBooking, rts, rw } = useApp();
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(null);
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
 
@@ -39,8 +39,8 @@ export default function FasilitasPage() {
 
   const handleBookingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedFacility || !applicantName || !phone || !startDate || !purpose) {
-      alert("Mohon lengkapi formulir peminjaman!");
+    if (!selectedFacility || !applicantName || !startDate || !purpose) {
+      alert("Mohon lengkapi seluruh formulir reservasi!");
       return;
     }
 
@@ -48,7 +48,7 @@ export default function FasilitasPage() {
       facilityId: selectedFacility.id,
       facilityName: selectedFacility.name,
       applicantName,
-      phone,
+      phone: phone || "081234567890",
       rtNumber,
       startDate,
       endDate: endDate || startDate,
@@ -71,10 +71,10 @@ export default function FasilitasPage() {
                 Sarana & Prasarana Lingkungan
               </span>
               <h1 className="text-3xl font-black tracking-tight mt-2 text-white">
-                Fasilitas Umum & Balai Warga RW 05
+                Fasilitas Umum & Balai {rw.name}
               </h1>
               <p className="text-sm text-slate-400 mt-1 max-w-2xl">
-                Daftar fasilitas bersama milik warga RW 05 yang dapat dipinjam untuk acara tasyakuran keluarga, arisan, olahraga, posyandu, dan rapat lingkungan.
+                Daftar fasilitas bersama milik warga {rw.name} yang dapat dipinjam untuk acara tasyakuran keluarga, arisan, olahraga, posyandu, dan rapat lingkungan.
               </p>
             </div>
           </div>

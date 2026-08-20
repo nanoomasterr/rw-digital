@@ -64,9 +64,9 @@ export default function SuratOnlinePage() {
       letterTitle: letterTypeTitles[letterType],
       residentName,
       nik,
-      familyCardNumber: familyCardNumber || "3201011205100001",
+      familyCardNumber: familyCardNumber || "3277011205100001",
       rtNumber,
-      address: address || `Jl. Mawar No. 12, RT ${rtNumber}/RW 05`,
+      address: address || `Jl. Kebon Rumput No. 12, RT ${rtNumber}/RW 14`,
       phone,
       purpose,
     });
@@ -554,7 +554,7 @@ export default function SuratOnlinePage() {
                         {searchedLetter.rwApprovedAt ? "✓" : "3"}
                       </div>
                       <div>
-                        <p className="font-bold text-slate-900">3. Approval & QR RW 05</p>
+                        <p className="font-bold text-slate-900">3. Approval & QR {rw.name}</p>
                         <p className="text-slate-500 text-[11px]">
                           {searchedLetter.rwApprovedAt ? "Selesai diterbitkan" : "Menunggu tanda tangan RW"}
                         </p>

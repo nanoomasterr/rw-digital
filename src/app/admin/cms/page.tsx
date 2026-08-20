@@ -33,7 +33,7 @@ export default function AdminCMSPage() {
   const [artCategory, setArtCategory] = useState<Article["category"]>("KEGIATAN");
   const [artExcerpt, setArtExcerpt] = useState("");
   const [artContent, setArtContent] = useState("");
-  const [artAuthor, setArtAuthor] = useState("Sekretariat RW 05");
+  const [artAuthor, setArtAuthor] = useState("Sekretariat RW 14 Padasuka");
   const [artImage, setArtImage] = useState("");
   const [artImportant, setArtImportant] = useState(false);
 
@@ -49,11 +49,11 @@ export default function AdminCMSPage() {
       category: artCategory,
       excerpt: artExcerpt,
       content: artContent,
-      author: artAuthor || "Sekretariat RW 05",
+      author: artAuthor || "Sekretariat RW 14",
       coverImageUrl:
         artImage ||
         "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=800&auto=format&fit=crop&q=80",
-      tags: ["Kegiatan", "RW 05"],
+      tags: ["Kegiatan", "RW 14", "Padasuka"],
       isImportant: artImportant,
     });
 

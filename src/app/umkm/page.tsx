@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 export default function UMKMPage() {
-  const { umkms, addUMKM, rts } = useApp();
+  const { umkms, addUMKM, rts, rw } = useApp();
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [addModalOpen, setAddModalOpen] = useState(false);
@@ -55,7 +55,7 @@ export default function UMKMPage() {
   const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!businessName || !ownerName || !whatsappNumber) {
-      alert("Mohon lengkapi data usaha Anda!");
+      alert("Mohon lengkapi nama usaha, nama pemilik, dan nomor WhatsApp!");
       return;
     }
 
@@ -63,11 +63,11 @@ export default function UMKMPage() {
       businessName,
       ownerName,
       category,
-      description: description || "Produk berkualitas karya warga RW 05.",
+      description: description || `Produk berkualitas karya warga ${rw.name}.`,
       priceRange: priceRange || "Harga Bersahabat",
       whatsappNumber: whatsappNumber.replace(/^0/, "62"),
       rtNumber,
-      address: address || `RT ${rtNumber} RW 05`,
+      address: address || `RT ${rtNumber} ${rw.name}`,
       imageUrl:
         imageUrl ||
         "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80",
@@ -91,7 +91,7 @@ export default function UMKMPage() {
                 Pemberdayaan Ekonomi Lokal
               </span>
               <h1 className="text-3xl font-black tracking-tight mt-2 text-white">
-                Direktori Pasar & UMKM Warga RW 05
+                Direktori Pasar & UMKM Warga {rw.name}
               </h1>
               <p className="text-sm text-slate-400 mt-1 max-w-2xl">
                 Temukan aneka kuliner, toko sembako, dan jasa profesional dari tetangga sendiri. Dukung usaha warga sekitar!
@@ -220,7 +220,7 @@ export default function UMKMPage() {
                   Daftarkan Usaha / Produk Warga
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Produk Anda akan tampil di direktori UMKM RW 05 dan dapat dihubungi warga lain.
+                  Produk Anda akan tampil di direktori UMKM {rw.name} dan dapat dihubungi warga lain.
                 </p>
               </div>
               <button
@@ -241,7 +241,7 @@ export default function UMKMPage() {
                   Usaha Berhasil Terdaftar!
                 </h4>
                 <p className="text-xs text-slate-600">
-                  Produk <strong>{businessName}</strong> kini sudah tayang di etalase pasar digital warga RW 05.
+                  Produk <strong>{businessName}</strong> kini sudah tayang di etalase pasar digital warga {rw.name}.
                 </p>
                 <button
                   type="button"

@@ -5,6 +5,8 @@ import { initialEmergencyContacts } from "@/data/mockData";
 import { PhoneCall, ShieldAlert, Shield, Flame, Ambulance, Flag } from "lucide-react";
 
 export function EmergencyBar() {
+  const { rw } = useApp();
+
   const getIcon = (iconName: string) => {
     switch (iconName) {
       case "ShieldAlert":
@@ -32,7 +34,7 @@ export function EmergencyBar() {
               Layanan Siaga 24 Jam
             </div>
             <h2 className="text-2xl font-black text-slate-900 mt-1">
-              Kontak Darurat Terpadu RW 05
+              Kontak Darurat Terpadu {rw.name}
             </h2>
             <p className="text-sm text-slate-600 mt-0.5">
               Hubungi nomor berikut jika terjadi insiden keamanan, kebakaran, bencana, atau keadaan darurat medis di lingkungan.

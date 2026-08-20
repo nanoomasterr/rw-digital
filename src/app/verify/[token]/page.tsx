@@ -54,7 +54,7 @@ export default function VerifyDocumentPage() {
                 DOKUMEN SAH & TERVERIFIKASI
               </span>
               <p className="text-xs text-emerald-100">
-                Surat keterangan ini diterbitkan secara resmi melalui sistem administrasi digital RW 05.
+                Surat keterangan ini diterbitkan secara resmi melalui sistem administrasi digital {rw.name}.
               </p>
             </div>
 
@@ -66,7 +66,7 @@ export default function VerifyDocumentPage() {
                   Nomor Surat Resmi RW
                 </span>
                 <p className="text-base font-black text-slate-900 font-mono">
-                  {letter.letterOfficialNumber || "470/085/RW.05/VIII/2026"}
+                  {letter.letterOfficialNumber || "470/014/RW.14/VIII/2026"}
                 </p>
                 <p className="text-emerald-700 font-semibold text-xs pt-1">
                   {letter.letterTitle}
@@ -97,7 +97,7 @@ export default function VerifyDocumentPage() {
                   Wilayah / Alamat Domisili
                 </span>
                 <p className="font-medium text-slate-800 mt-0.5">
-                  RT {letter.rtNumber} / RW 05, {letter.address}
+                  RT {letter.rtNumber} / {rw.name}, {letter.address}
                 </p>
               </div>
 
@@ -131,7 +131,7 @@ export default function VerifyDocumentPage() {
                   <div className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-100">
                     <p className="font-bold text-emerald-800 text-[11px] flex items-center gap-1">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                      Pengesahan Ketua RW 05
+                      Pengesahan Ketua {rw.name}
                     </p>
                     <p className="text-slate-700 font-semibold mt-1 truncate">
                       {letter.rwApprovedBy || rw.headName}
@@ -171,7 +171,7 @@ export default function VerifyDocumentPage() {
             className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900"
           >
             <Home className="w-4 h-4" />
-            <span>Kembali ke Beranda RW 05</span>
+            <span>Kembali ke Beranda {rw.name}</span>
           </Link>
         </div>
 

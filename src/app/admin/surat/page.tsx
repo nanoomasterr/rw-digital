@@ -51,7 +51,7 @@ export default function AdminSuratPage() {
   });
 
   const handleApproveRT = (letter: LetterRequest) => {
-    const approver = currentRole === "KETUA_RT" ? "Drs. Eko Prasetyo (Ketua RT 001)" : `Ketua RT ${letter.rtNumber}`;
+    const approver = currentRole === "KETUA_RT" ? "Dadang Kusnadi (Ketua RT 001)" : `Ketua RT ${letter.rtNumber}`;
     approveLetterRT(letter.id, approver, "Berkas persyaratan & domisili pemohon telah diverifikasi sah.");
     setActionNotice(`Surat ${letter.trackingCode} berhasil disetujui tingkat RT dan diteruskan ke Ketua RW.`);
     setTimeout(() => setActionNotice(null), 4000);
@@ -59,7 +59,7 @@ export default function AdminSuratPage() {
 
   const handleApproveRW = (letter: LetterRequest) => {
     const randomNum = Math.floor(10 + Math.random() * 90);
-    const officialNo = `470/${String(randomNum).padStart(3, "0")}/RW.05/VIII/2026`;
+    const officialNo = `470/${String(randomNum).padStart(3, "0")}/RW.14/VIII/2026`;
     approveLetterRW(letter.id, rw.headName, officialNo);
     setActionNotice(`Surat ${letter.trackingCode} telah disahkan dan diterbitkan dengan nomor ${officialNo}.`);
     setTimeout(() => setActionNotice(null), 4000);
@@ -217,7 +217,7 @@ export default function AdminSuratPage() {
                   RT {letter.rtNumber}: <strong>{letter.rtApprovedAt ? `✓ Disetujui (${letter.rtApprovedBy})` : "Menunggu Validasi"}</strong>
                 </p>
                 <p className="text-[11px] mt-0.5">
-                  RW 05: <strong>{letter.rwApprovedAt ? `✓ Diterbitkan (${letter.rwApprovedBy})` : "Menunggu TTD RW"}</strong>
+                  RW 14: <strong>{letter.rwApprovedAt ? `✓ Diterbitkan (${letter.rwApprovedBy})` : "Menunggu TTD RW"}</strong>
                 </p>
                 {letter.letterOfficialNumber && (
                   <p className="font-mono font-bold text-emerald-700 text-[11px] mt-1">
@@ -340,7 +340,7 @@ export default function AdminSuratPage() {
               {/* Kop Surat Resmi */}
               <div className="text-center border-b-4 border-double border-slate-900 pb-4 space-y-0.5">
                 <h2 className="text-sm sm:text-base font-bold uppercase tracking-wider font-sans">
-                  RUKUN TETANGGA {previewLetter.rtNumber} / RUKUN WARGA 05
+                  RUKUN TETANGGA {previewLetter.rtNumber} / {rw.name.toUpperCase()}
                 </h2>
                 <h3 className="text-base sm:text-lg font-black uppercase tracking-tight font-sans">
                   KELURAHAN {rw.village.toUpperCase()} • KECAMATAN {rw.subDistrict.toUpperCase()}
@@ -359,13 +359,13 @@ export default function AdminSuratPage() {
                   {previewLetter.letterTitle}
                 </h4>
                 <p className="font-sans text-xs text-slate-700 font-mono">
-                  Nomor: {previewLetter.letterOfficialNumber || `470/---/RW.05/VIII/2026`}
+                  Nomor: {previewLetter.letterOfficialNumber || `470/---/RW.14/VIII/2026`}
                 </p>
               </div>
 
               {/* Paragraf Pembuka */}
               <p className="text-justify font-sans pt-2">
-                Yang bertanda tangan di bawah ini, Pengurus RT {previewLetter.rtNumber} dan Pengurus RW 05 Kelurahan {rw.village}, Kecamatan {rw.subDistrict}, {rw.city}, dengan ini menerangkan dengan sebenarnya bahwa:
+                Yang bertanda tangan di bawah ini, Pengurus RT {previewLetter.rtNumber} dan Pengurus {rw.name} Kelurahan {rw.village}, Kecamatan {rw.subDistrict}, {rw.city}, dengan ini menerangkan dengan sebenarnya bahwa:
               </p>
 
               {/* Data Warga Table */}
@@ -384,7 +384,7 @@ export default function AdminSuratPage() {
                 </div>
                 <div className="grid grid-cols-12">
                   <span className="col-span-4 text-slate-600">Alamat Domisili</span>
-                  <span className="col-span-8 text-slate-800">: RT {previewLetter.rtNumber} / RW 05, {previewLetter.address}</span>
+                  <span className="col-span-8 text-slate-800">: RT {previewLetter.rtNumber} / {rw.name}, {previewLetter.address}</span>
                 </div>
                 <div className="grid grid-cols-12">
                   <span className="col-span-4 text-slate-600">Maksud / Keperluan</span>
@@ -430,10 +430,10 @@ export default function AdminSuratPage() {
                 {/* RW Column */}
                 <div className="space-y-1">
                   <p>{rw.city}, {formatDate(previewLetter.rwApprovedAt || previewLetter.submittedAt)}</p>
-                  <p className="font-bold">Ketua RW 05</p>
+                  <p className="font-bold">Ketua {rw.name}</p>
                   <div className="h-16 flex items-center justify-center">
                     <div className="border border-emerald-300 bg-emerald-50 text-emerald-800 px-2 py-1 rounded text-[10px] font-bold">
-                      [Cap & TTD Digital RW 05]
+                      [Cap & TTD Digital {rw.name}]
                     </div>
                   </div>
                   <p className="font-bold underline">

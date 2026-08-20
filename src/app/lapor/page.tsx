@@ -21,7 +21,7 @@ import {
 import { formatDate } from "@/lib/utils";
 
 export default function LaporPage() {
-  const { complaints, addComplaint, rts } = useApp();
+  const { complaints, addComplaint, rts, rw } = useApp();
   const [activeTab, setActiveTab] = useState<"buat" | "daftar">("buat");
 
   // Form State
@@ -43,7 +43,7 @@ export default function LaporPage() {
     }
 
     const created = addComplaint({
-      reporterName: isAnonymous ? "Warga RW 05 (Anonim)" : (reporterName || "Warga RW 05"),
+      reporterName: isAnonymous ? `Warga ${rw.name} (Anonim)` : (reporterName || `Warga ${rw.name}`),
       phone: phone || "081234567890",
       rtNumber,
       category,

@@ -36,7 +36,7 @@ export function StructureSection() {
         <div className="mb-12">
           <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            Pengurus Harian & Seksi RW 05
+            Pengurus Harian & Seksi {rw.name}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {mainExecutives.map((exec, i) => (
@@ -66,7 +66,7 @@ export function StructureSection() {
         <div>
           <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
             <Building2 className="w-4 h-4 text-emerald-600" />
-            Daftar Ketua Rukun Tetangga (RT 01 - RT 05)
+            Daftar Ketua Rukun Tetangga (RT 01 - RT 0{rts.length})
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             {rts.map((rt) => (

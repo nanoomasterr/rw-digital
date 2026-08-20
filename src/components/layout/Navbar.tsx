@@ -61,7 +61,7 @@ export function Navbar() {
           {/* Logo Brand */}
           <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group">
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-700 flex items-center justify-center text-white shadow-sm font-black text-xs sm:text-sm shrink-0">
-              RW05
+              RW14
             </div>
             <div>
               <div className="flex items-center gap-1.5">

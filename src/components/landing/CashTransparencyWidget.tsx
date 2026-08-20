@@ -6,7 +6,7 @@ import { useApp } from "@/lib/store";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export function CashTransparencyWidget() {
-  const { cashTransactions } = useApp();
+  const { cashTransactions, rw } = useApp();
 
   const currentBalance =
     cashTransactions.length > 0
@@ -40,7 +40,7 @@ export function CashTransparencyWidget() {
               Transparansi Keuangan & Kas RW
             </h2>
             <p className="text-sm text-slate-600 mt-1 max-w-xl">
-              Setiap rupiah uang kas dari iuran dan donasi warga dilaporkan secara terbuka, jujur, dan dapat diaudit oleh seluruh warga RW 05.
+              Setiap rupiah uang kas dari iuran dan donasi warga dilaporkan secara terbuka, jujur, dan dapat diaudit oleh seluruh warga {rw.name}.
             </p>
           </div>
 
