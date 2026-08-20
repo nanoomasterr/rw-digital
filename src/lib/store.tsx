@@ -73,7 +73,11 @@ interface AppContextType {
   updateBookingStatus: (id: string, status: 'DISETUJUI' | 'DITOLAK') => void;
 
   addResident: (data: Omit<Resident, "id" | "createdAt">) => Resident;
+  updateResident: (id: string, data: Partial<Resident>) => void;
+  deleteResident: (id: string) => void;
   addFamily: (data: Omit<Family, "id" | "createdAt" | "residentCount">) => Family;
+  updateFamily: (id: string, data: Partial<Family>) => void;
+  deleteFamily: (id: string) => void;
   
   addUMKM: (data: Omit<UMKMItem, "id">) => void;
   addArticle: (data: Omit<Article, "id" | "publishedAt" | "slug">) => void;
@@ -396,6 +400,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return newResident;
   };
 
+  const updateResident = (id: string, data: Partial<Resident>) => {
+    setResidents((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, ...data } : r))
+    );
+  };
+
+  const deleteResident = (id: string) => {
+    const res = residents.find((r) => r.id === id);
+    if (res) {
+      setFamilies((prev) =>
+        prev.map((f) =>
+          f.id === res.familyId ? { ...f, residentCount: Math.max(1, f.residentCount - 1) } : f
+        )
+      );
+    }
+    setResidents((prev) => prev.filter((r) => r.id !== id));
+  };
+
   const addFamily = (data: Omit<Family, "id" | "createdAt" | "residentCount">): Family => {
     const newFamily: Family = {
       ...data,
@@ -405,6 +427,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     };
     setFamilies((prev) => [...prev, newFamily]);
     return newFamily;
+  };
+
+  const updateFamily = (id: string, data: Partial<Family>) => {
+    setFamilies((prev) =>
+      prev.map((f) => (f.id === id ? { ...f, ...data } : f))
+    );
+  };
+
+  const deleteFamily = (id: string) => {
+    setFamilies((prev) => prev.filter((f) => f.id !== id));
+    setResidents((prev) => prev.filter((r) => r.familyId !== id));
   };
 
   // UMKM & Articles
@@ -474,7 +507,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         addFacilityBooking,
         updateBookingStatus,
         addResident,
+        updateResident,
+        deleteResident,
         addFamily,
+        updateFamily,
+        deleteFamily,
         addUMKM,
         addArticle,
         resetToDefault,

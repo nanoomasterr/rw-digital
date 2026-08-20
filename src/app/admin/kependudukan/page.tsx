@@ -14,23 +14,66 @@ import {
   Download,
   Building,
   FileSpreadsheet,
+  Pencil,
+  Trash2,
+  CheckCircle2,
+  AlertTriangle,
 } from "lucide-react";
 import { maskNik, maskFamilyCard, formatDate } from "@/lib/utils";
 
 export default function KependudukanPage() {
-  const { families, residents, rts, addResident, addFamily, currentRole, rw } = useApp();
+  const {
+    families,
+    residents,
+    rts,
+    addResident,
+    updateResident,
+    deleteResident,
+    addFamily,
+    updateFamily,
+    deleteFamily,
+    currentRole,
+    rw,
+  } = useApp();
   const [activeTab, setActiveTab] = useState<"warga" | "kk">("warga");
   const [selectedRT, setSelectedRT] = useState<string>("ALL");
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFullNik, setShowFullNik] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
 
-  // Modal State
+  // Modal State Tambah
   const [residentModalOpen, setResidentModalOpen] = useState(false);
   const [familyModalOpen, setFamilyModalOpen] = useState(false);
   const [selectedFamilyForDetail, setSelectedFamilyForDetail] = useState<Family | null>(null);
 
-  // Resident Form State
+  // Modal State Edit Warga
+  const [editResidentModalOpen, setEditResidentModalOpen] = useState(false);
+  const [editResId, setEditResId] = useState("");
+  const [editResName, setEditResName] = useState("");
+  const [editResNik, setEditResNik] = useState("");
+  const [editResGender, setEditResGender] = useState<Gender>("L");
+  const [editResBirthPlace, setEditResBirthPlace] = useState("");
+  const [editResBirthDate, setEditResBirthDate] = useState("");
+  const [editResReligion, setEditResReligion] = useState("Islam");
+  const [editResOccupation, setEditResOccupation] = useState("");
+  const [editResFamilyRole, setEditResFamilyRole] = useState<FamilyRole>("KEPALA_KELUARGA");
+  const [editResStatus, setEditResStatus] = useState<ResidentStatus>("TETAP");
+  const [editResFamilyId, setEditResFamilyId] = useState("");
+  const [editResPhone, setEditResPhone] = useState("");
+
+  // Modal State Edit KK
+  const [editFamilyModalOpen, setEditFamilyModalOpen] = useState(false);
+  const [editFamId, setEditFamId] = useState("");
+  const [editFamCardNumber, setEditFamCardNumber] = useState("");
+  const [editFamHeadName, setEditFamHeadName] = useState("");
+  const [editFamAddress, setEditFamAddress] = useState("");
+  const [editFamHouseNumber, setEditFamHouseNumber] = useState("");
+  const [editFamPhone, setEditFamPhone] = useState("");
+  const [editFamRtId, setEditFamRtId] = useState("rt-01");
+  const [editFamStatus, setEditFamStatus] = useState<ResidentStatus>("TETAP");
+
+  // Resident Form State (Tambah)
   const [resName, setResName] = useState("");
   const [resNik, setResNik] = useState("");
   const [resGender, setResGender] = useState<Gender>("L");
@@ -42,7 +85,7 @@ export default function KependudukanPage() {
   const [resStatus, setResStatus] = useState<ResidentStatus>("TETAP");
   const [resFamilyId, setResFamilyId] = useState(families[0]?.id || "fam-01");
 
-  // Family Form State
+  // Family Form State (Tambah)
   const [famCardNumber, setFamCardNumber] = useState("");
   const [famHeadName, setFamHeadName] = useState("");
   const [famAddress, setFamAddress] = useState("");
@@ -101,6 +144,62 @@ export default function KependudukanPage() {
     setResidentModalOpen(false);
     setResName("");
     setResNik("");
+    setNotice(`Data warga ${resName} berhasil ditambahkan.`);
+    setTimeout(() => setNotice(null), 4000);
+  };
+
+  const handleOpenEditResident = (res: Resident) => {
+    setEditResId(res.id);
+    setEditResName(res.fullName);
+    setEditResNik(res.nik);
+    setEditResGender(res.gender);
+    setEditResBirthPlace(res.birthPlace || "Depok");
+    setEditResBirthDate(res.birthDate || "1995-01-01");
+    setEditResReligion(res.religion || "Islam");
+    setEditResOccupation(res.occupation || "Karyawan Swasta");
+    setEditResFamilyRole(res.familyRole || "KEPALA_KELUARGA");
+    setEditResStatus(res.status || "TETAP");
+    setEditResFamilyId(res.familyId || families[0]?.id || "");
+    setEditResPhone(res.phone || "");
+    setEditResidentModalOpen(true);
+  };
+
+  const handleSaveEditResident = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editResId || !editResName || !editResNik) {
+      alert("Mohon lengkapi NIK dan Nama!");
+      return;
+    }
+
+    const parentFamily = families.find((f) => f.id === editResFamilyId);
+    const rtId = parentFamily ? parentFamily.rtId : "rt-01";
+
+    updateResident(editResId, {
+      fullName: editResName,
+      nik: editResNik,
+      gender: editResGender,
+      birthPlace: editResBirthPlace,
+      birthDate: editResBirthDate,
+      religion: editResReligion,
+      occupation: editResOccupation,
+      familyRole: editResFamilyRole,
+      status: editResStatus,
+      familyId: editResFamilyId,
+      rtId,
+      phone: editResPhone,
+    });
+
+    setEditResidentModalOpen(false);
+    setNotice(`Data warga ${editResName} berhasil diperbarui.`);
+    setTimeout(() => setNotice(null), 4000);
+  };
+
+  const handleDeleteResident = (id: string, name: string) => {
+    if (confirm(`Apakah Anda yakin ingin menghapus data warga "${name}"?`)) {
+      deleteResident(id);
+      setNotice(`Data warga ${name} berhasil dihapus.`);
+      setTimeout(() => setNotice(null), 4000);
+    }
   };
 
   const handleAddFamily = (e: React.FormEvent) => {
@@ -123,6 +222,50 @@ export default function KependudukanPage() {
     setFamilyModalOpen(false);
     setFamCardNumber("");
     setFamHeadName("");
+    setNotice(`Kartu Keluarga ${famHeadName} berhasil ditambahkan.`);
+    setTimeout(() => setNotice(null), 4000);
+  };
+
+  const handleOpenEditFamily = (fam: Family) => {
+    setEditFamId(fam.id);
+    setEditFamCardNumber(fam.familyCardNumber);
+    setEditFamHeadName(fam.headOfFamilyName);
+    setEditFamAddress(fam.address || "");
+    setEditFamHouseNumber(fam.houseNumber || "");
+    setEditFamPhone(fam.phone || "");
+    setEditFamRtId(fam.rtId || "rt-01");
+    setEditFamStatus(fam.status || "TETAP");
+    setEditFamilyModalOpen(true);
+  };
+
+  const handleSaveEditFamily = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editFamId || !editFamCardNumber || !editFamHeadName) {
+      alert("Mohon lengkapi Nomor KK dan Nama Kepala Keluarga!");
+      return;
+    }
+
+    updateFamily(editFamId, {
+      familyCardNumber: editFamCardNumber,
+      headOfFamilyName: editFamHeadName,
+      address: editFamAddress,
+      houseNumber: editFamHouseNumber,
+      phone: editFamPhone,
+      rtId: editFamRtId,
+      status: editFamStatus,
+    });
+
+    setEditFamilyModalOpen(false);
+    setNotice(`Data KK ${editFamHeadName} berhasil diperbarui.`);
+    setTimeout(() => setNotice(null), 4000);
+  };
+
+  const handleDeleteFamily = (id: string, name: string) => {
+    if (confirm(`Apakah Anda yakin ingin menghapus data Kartu Keluarga "${name}" beserta seluruh anggotanya?`)) {
+      deleteFamily(id);
+      setNotice(`Kartu Keluarga ${name} berhasil dihapus.`);
+      setTimeout(() => setNotice(null), 4000);
+    }
   };
 
   // Export to CSV
@@ -211,6 +354,16 @@ export default function KependudukanPage() {
           )}
         </div>
       </div>
+
+      {notice && (
+        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between shadow-sm animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>{notice}</span>
+          </div>
+          <button onClick={() => setNotice(null)} className="text-emerald-700 font-bold">✕</button>
+        </div>
+      )}
 
       {/* Control Bar: Tabs, Search, Filter RT, Privacy Toggle */}
       <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
@@ -350,9 +503,30 @@ export default function KependudukanPage() {
                     </span>
                   </div>
 
-                  <div className="text-xs text-slate-500 pt-0.5">
-                    Pekerjaan: <span className="text-slate-800 font-medium">{res.occupation}</span>
+                  <div className="text-xs text-slate-500 pt-0.5 flex items-center justify-between">
+                    <span>Pekerjaan: <strong className="text-slate-800 font-medium">{res.occupation}</strong></span>
                   </div>
+
+                  {isCitizenManager && (
+                    <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenEditResident(res)}
+                        className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs flex items-center gap-1.5"
+                      >
+                        <Pencil className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteResident(res.id, res.fullName)}
+                        className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-xl text-xs flex items-center gap-1.5"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Hapus</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -370,6 +544,7 @@ export default function KependudukanPage() {
                   <th className="px-6 py-3.5">Peran Keluarga</th>
                   <th className="px-6 py-3.5">Pekerjaan</th>
                   <th className="px-6 py-3.5">Status Tinggal</th>
+                  {isCitizenManager && <th className="px-6 py-3.5 text-right">Aksi</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -408,6 +583,28 @@ export default function KependudukanPage() {
                           {res.status}
                         </span>
                       </td>
+                      {isCitizenManager && (
+                        <td className="px-6 py-3.5 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEditResident(res)}
+                              className="p-1.5 bg-slate-100 hover:bg-emerald-100 hover:text-emerald-700 text-slate-700 rounded-lg transition-colors"
+                              title="Edit Data Warga"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteResident(res.id, res.fullName)}
+                              className="p-1.5 bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-700 rounded-lg transition-colors"
+                              title="Hapus Data Warga"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   );
                 })}
@@ -445,14 +642,35 @@ export default function KependudukanPage() {
                   <p className="font-mono text-slate-500 text-[11px]">Telp: {fam.phone}</p>
                 </div>
 
-                <div className="pt-2 border-t border-slate-100 flex justify-end">
+                <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
                   <button
                     type="button"
                     onClick={() => setSelectedFamilyForDetail(fam)}
-                    className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs flex items-center justify-center gap-1"
+                    className="py-1.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs flex items-center gap-1"
                   >
-                    <span>Lihat Anggota Keluarga ({fam.residentCount})</span>
+                    <span>Anggota ({fam.residentCount})</span>
                   </button>
+
+                  {isCitizenManager && (
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenEditFamily(fam)}
+                        className="py-1.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs flex items-center gap-1"
+                      >
+                        <Pencil className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Edit KK</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteFamily(fam.id, fam.headOfFamilyName)}
+                        className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-xl text-xs"
+                        title="Hapus KK"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -470,7 +688,7 @@ export default function KependudukanPage() {
                   <th className="px-6 py-3.5 text-center">Anggota Keluarga</th>
                   <th className="px-6 py-3.5">No. Telepon</th>
                   <th className="px-6 py-3.5">Status Hunian</th>
-                  <th className="px-6 py-3.5 text-right">Rincian</th>
+                  <th className="px-6 py-3.5 text-right">Rincian & Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -506,13 +724,35 @@ export default function KependudukanPage() {
                       </span>
                     </td>
                     <td className="px-6 py-3.5 text-right">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedFamilyForDetail(fam)}
-                        className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs"
-                      >
-                        Lihat Anggota
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedFamilyForDetail(fam)}
+                          className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs"
+                        >
+                          Lihat Anggota
+                        </button>
+                        {isCitizenManager && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEditFamily(fam)}
+                              className="p-1.5 bg-slate-100 hover:bg-emerald-100 hover:text-emerald-700 text-slate-700 rounded-lg transition-colors"
+                              title="Edit Data KK"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteFamily(fam.id, fam.headOfFamilyName)}
+                              className="p-1.5 bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-700 rounded-lg transition-colors"
+                              title="Hapus KK"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -558,6 +798,7 @@ export default function KependudukanPage() {
                     <th className="px-4 py-2.5">Hubungan</th>
                     <th className="px-4 py-2.5">Gender</th>
                     <th className="px-4 py-2.5">Pekerjaan</th>
+                    {isCitizenManager && <th className="px-4 py-2.5 text-right">Aksi</th>}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -566,10 +807,34 @@ export default function KependudukanPage() {
                     .map((member) => (
                       <tr key={member.id}>
                         <td className="px-4 py-2.5 font-bold text-slate-900">{member.fullName}</td>
-                        <td className="px-4 py-2.5 font-mono text-slate-600">{member.nik}</td>
+                        <td className="px-4 py-2.5 font-mono text-slate-600">
+                          {showFullNik ? member.nik : maskNik(member.nik)}
+                        </td>
                         <td className="px-4 py-2.5 font-semibold text-emerald-700">{member.familyRole.replace("_", " ")}</td>
                         <td className="px-4 py-2.5">{member.gender === "L" ? "Laki-laki" : "Perempuan"}</td>
                         <td className="px-4 py-2.5 text-slate-600">{member.occupation}</td>
+                        {isCitizenManager && (
+                          <td className="px-4 py-2.5 text-right">
+                            <div className="flex items-center justify-end gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => handleOpenEditResident(member)}
+                                className="p-1 bg-slate-100 hover:bg-emerald-100 hover:text-emerald-700 text-slate-700 rounded-lg transition-colors"
+                                title="Edit Anggota"
+                              >
+                                <Pencil className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteResident(member.id, member.fullName)}
+                                className="p-1 bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-700 rounded-lg transition-colors"
+                                title="Hapus Anggota"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </td>
+                        )}
                       </tr>
                     ))}
                 </tbody>
@@ -814,6 +1079,324 @@ export default function KependudukanPage() {
                   className="px-5 py-2 bg-slate-900 text-white font-bold rounded-xl shadow"
                 >
                   Simpan KK
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Edit Data Warga */}
+      {editResidentModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm overflow-y-auto p-4 flex justify-center items-start">
+          <div
+            className="fixed inset-0 cursor-pointer"
+            onClick={() => setEditResidentModalOpen(false)}
+            aria-label="Tutup Modal"
+          />
+          <div className="relative bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 animate-in zoom-in-95 space-y-4 my-8 z-10">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="text-base font-extrabold text-slate-900">
+                  Edit Data Kependudukan Warga
+                </h3>
+                <p className="text-xs text-slate-500 font-mono">
+                  NIK: {editResNik}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditResidentModalOpen(false)}
+                className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-500 font-bold flex items-center justify-center transition-colors text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditResident} className="space-y-3 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Nama Lengkap (KTP)</label>
+                <input
+                  type="text"
+                  required
+                  value={editResName}
+                  onChange={(e) => setEditResName(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs text-slate-900 font-semibold"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">NIK (16 Digit)</label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={16}
+                    value={editResNik}
+                    onChange={(e) => setEditResNik(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Jenis Kelamin</label>
+                  <select
+                    value={editResGender}
+                    onChange={(e) => setEditResGender(e.target.value as Gender)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
+                  >
+                    <option value="L">Laki-laki</option>
+                    <option value="P">Perempuan</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Tempat Lahir</label>
+                  <input
+                    type="text"
+                    value={editResBirthPlace}
+                    onChange={(e) => setEditResBirthPlace(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Tanggal Lahir</label>
+                  <input
+                    type="date"
+                    value={editResBirthDate}
+                    onChange={(e) => setEditResBirthDate(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Agama</label>
+                  <select
+                    value={editResReligion}
+                    onChange={(e) => setEditResReligion(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
+                  >
+                    <option value="Islam">Islam</option>
+                    <option value="Kristen">Kristen</option>
+                    <option value="Katolik">Katolik</option>
+                    <option value="Hindu">Hindu</option>
+                    <option value="Buddha">Buddha</option>
+                    <option value="Konghucu">Konghucu</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Pekerjaan</label>
+                  <input
+                    type="text"
+                    value={editResOccupation}
+                    onChange={(e) => setEditResOccupation(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Hubungan Keluarga</label>
+                  <select
+                    value={editResFamilyRole}
+                    onChange={(e) => setEditResFamilyRole(e.target.value as FamilyRole)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white font-semibold"
+                  >
+                    <option value="KEPALA_KELUARGA">Kepala Keluarga</option>
+                    <option value="ISTRI">Istri</option>
+                    <option value="ANAK">Anak</option>
+                    <option value="FAMILI_LAIN">Famili Lain</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Status Tinggal</label>
+                  <select
+                    value={editResStatus}
+                    onChange={(e) => setEditResStatus(e.target.value as ResidentStatus)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white font-semibold"
+                  >
+                    <option value="TETAP">Warga Tetap</option>
+                    <option value="KONTRAK">Warga Kontrak / Sewa</option>
+                    <option value="KOS">Warga Kos</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Kartu Keluarga (KK)</label>
+                <select
+                  value={editResFamilyId}
+                  onChange={(e) => setEditResFamilyId(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white font-medium"
+                >
+                  {families.map((fam) => (
+                    <option key={fam.id} value={fam.id}>
+                      {fam.headOfFamilyName} (No. KK: {fam.familyCardNumber}) - {fam.houseNumber}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">No. HP / WhatsApp</label>
+                <input
+                  type="text"
+                  placeholder="081234567890"
+                  value={editResPhone}
+                  onChange={(e) => setEditResPhone(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs"
+                />
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditResidentModalOpen(false)}
+                  className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-semibold"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow"
+                >
+                  Simpan Perubahan
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Edit Kartu Keluarga */}
+      {editFamilyModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm overflow-y-auto p-4 flex justify-center items-start">
+          <div
+            className="fixed inset-0 cursor-pointer"
+            onClick={() => setEditFamilyModalOpen(false)}
+            aria-label="Tutup Modal"
+          />
+          <div className="relative bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 animate-in zoom-in-95 space-y-4 my-8 z-10">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="text-base font-extrabold text-slate-900">
+                  Edit Kartu Keluarga (KK)
+                </h3>
+                <p className="text-xs text-slate-500 font-mono">
+                  No. KK: {editFamCardNumber}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditFamilyModalOpen(false)}
+                className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-500 font-bold flex items-center justify-center transition-colors text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditFamily} className="space-y-3 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Nomor Kartu Keluarga (16 Digit)</label>
+                <input
+                  type="text"
+                  required
+                  maxLength={16}
+                  value={editFamCardNumber}
+                  onChange={(e) => setEditFamCardNumber(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-mono font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Nama Kepala Keluarga</label>
+                <input
+                  type="text"
+                  required
+                  value={editFamHeadName}
+                  onChange={(e) => setEditFamHeadName(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Wilayah RT</label>
+                  <select
+                    value={editFamRtId}
+                    onChange={(e) => setEditFamRtId(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white font-medium"
+                  >
+                    {rts.map((rt) => (
+                      <option key={rt.id} value={rt.id}>
+                        RT {rt.rtNumber} (Ketua: {rt.headName})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Blok / Nomor Rumah</label>
+                  <input
+                    type="text"
+                    value={editFamHouseNumber}
+                    onChange={(e) => setEditFamHouseNumber(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Alamat Jalan</label>
+                <input
+                  type="text"
+                  value={editFamAddress}
+                  onChange={(e) => setEditFamAddress(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">No. Telepon / WA</label>
+                  <input
+                    type="text"
+                    value={editFamPhone}
+                    onChange={(e) => setEditFamPhone(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Status Hunian</label>
+                  <select
+                    value={editFamStatus}
+                    onChange={(e) => setEditFamStatus(e.target.value as ResidentStatus)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white font-semibold"
+                  >
+                    <option value="TETAP">Warga Tetap</option>
+                    <option value="KONTRAK">Warga Kontrak / Sewa</option>
+                    <option value="KOS">Warga Kos</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditFamilyModalOpen(false)}
+                  className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-semibold"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow"
+                >
+                  Simpan Perubahan KK
                 </button>
               </div>
             </form>
