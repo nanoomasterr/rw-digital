@@ -513,8 +513,13 @@ export default function AdminKeuanganPage() {
 
       {/* Modal Tambah Transaksi Kas */}
       {txModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 animate-in zoom-in-95 space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm overflow-y-auto p-4 flex justify-center items-start">
+          <div
+            className="fixed inset-0 cursor-pointer"
+            onClick={() => setTxModalOpen(false)}
+            aria-label="Tutup Modal"
+          />
+          <div className="relative bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 animate-in zoom-in-95 space-y-4 my-8 z-10">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-base font-extrabold text-slate-900">
                 Pencatatan Buku Kas RW
@@ -522,7 +527,7 @@ export default function AdminKeuanganPage() {
               <button
                 type="button"
                 onClick={() => setTxModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 font-bold"
+                className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-500 font-bold flex items-center justify-center transition-colors text-sm"
               >
                 ✕
               </button>

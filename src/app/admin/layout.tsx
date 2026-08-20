@@ -219,8 +219,12 @@ export default function AdminLayout({
         {/* Top Header Bar - Fixed at top of content area */}
         <header className="shrink-0 bg-white/95 backdrop-blur border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between z-20">
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2">
-              <span className="text-xs text-slate-500 font-medium">Masuk Sebagai:</span>
+            <div className="flex items-center gap-2">
+              <span className="font-extrabold text-sm text-slate-900 hidden md:inline-block">
+                {navItems.find((item) => item.href === pathname)?.label || "Panel Pengurus"}
+              </span>
+              <span className="text-slate-300 hidden md:inline-block">•</span>
+              <span className="text-xs text-slate-500 font-medium hidden sm:inline-block">Masuk Sebagai:</span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
                 {roleLabels[currentRole].badge}
               </span>
@@ -230,7 +234,7 @@ export default function AdminLayout({
           <div className="flex items-center gap-3">
             <div className="text-right hidden sm:block">
               <p className="text-xs font-bold text-slate-900">{roleLabels[currentRole].title}</p>
-              <p className="text-[11px] text-slate-400">{rw.name}</p>
+              <p className="text-[11px] text-slate-400">{rw.name} ({rw.village})</p>
             </div>
             <div className="w-9 h-9 rounded-xl bg-slate-900 text-emerald-400 flex items-center justify-center font-bold text-sm shadow-sm">
               {currentRole === "KETUA_RW" ? "RW" : currentRole === "KETUA_RT" ? "RT" : currentRole === "BENDAHARA" ? "BD" : "PT"}
@@ -239,8 +243,8 @@ export default function AdminLayout({
         </header>
 
         {/* Page Children Container - Scrollable Area */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-8 w-full">
-          <div className="max-w-7xl w-full mx-auto">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 w-full">
+          <div className="w-full mx-auto">
             {children}
           </div>
         </main>

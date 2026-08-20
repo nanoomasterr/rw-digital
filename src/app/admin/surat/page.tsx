@@ -645,27 +645,36 @@ export default function AdminSuratPage() {
 
       {/* Modal Buat / Terbitkan Surat Pengantar (Khusus RT & RW) */}
       {createModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5 my-8 animate-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm overflow-y-auto p-3 sm:p-6 flex justify-center items-start">
+          {/* Backdrop Click Area */}
+          <div
+            className="fixed inset-0 cursor-pointer"
+            onClick={() => setCreateModalOpen(false)}
+            aria-label="Tutup Modal"
+          />
+
+          <div className="relative bg-white rounded-3xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden my-4 sm:my-8 z-10 animate-in zoom-in-95">
+            {/* Sticky Header */}
+            <div className="sticky top-0 bg-white/95 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex items-center justify-between z-20">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
                   Otoritas: {currentRole === "KETUA_RW" ? "Pengurus RW 14" : "Pengurus RT 01"}
                 </span>
-                <h3 className="text-lg font-extrabold text-slate-900 mt-1">
+                <h3 className="text-base sm:text-lg font-extrabold text-slate-900 mt-1">
                   Penerbitan Surat Pengantar Warga
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setCreateModalOpen(false)}
-                className="p-1 text-slate-400 hover:text-slate-600 font-bold"
+                className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-500 font-bold flex items-center justify-center transition-colors text-sm"
+                aria-label="Tutup"
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleCreateLetter} className="space-y-4 text-xs">
+            <form onSubmit={handleCreateLetter} className="p-6 space-y-4 text-xs">
               {/* Form Pencarian Cepat Data Warga */}
               <div
                 ref={searchContainerRef}
@@ -929,6 +938,59 @@ export default function AdminSuratPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Tolak Permohonan Surat */}
+      {rejectModalOpen && letterToReject && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm overflow-y-auto p-4 flex justify-center items-start">
+          <div
+            className="fixed inset-0 cursor-pointer"
+            onClick={() => setRejectModalOpen(false)}
+            aria-label="Tutup Modal"
+          />
+          <div className="relative bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 my-8 z-10 animate-in zoom-in-95">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-base font-extrabold text-slate-900">
+                Tolak Permohonan Surat
+              </h3>
+              <button
+                type="button"
+                onClick={() => setRejectModalOpen(false)}
+                className="w-7 h-7 rounded-lg bg-slate-100 text-slate-400 hover:text-slate-600 font-bold flex items-center justify-center text-xs"
+              >
+                ✕
+              </button>
+            </div>
+            <p className="text-xs text-slate-600">
+              Berikan alasan penolakan untuk permohonan surat <strong>{letterToReject.letterTitle}</strong> atas nama <strong>{letterToReject.residentName}</strong>:
+            </p>
+            <textarea
+              rows={3}
+              required
+              placeholder="Contoh: Berkas KTP/KK kurang jelas, harap lampirkan fotokopi bukti domisili terbaru..."
+              value={rejectionNote}
+              onChange={(e) => setRejectionNote(e.target.value)}
+              className="w-full p-3 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-rose-500 outline-none"
+            />
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setRejectModalOpen(false)}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmReject}
+                disabled={!rejectionNote.trim()}
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs shadow disabled:opacity-50"
+              >
+                Konfirmasi Tolak
+              </button>
+            </div>
           </div>
         </div>
       )}
