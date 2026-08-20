@@ -68,11 +68,11 @@ export function Navbar() {
                 <span className="font-black text-slate-900 text-sm sm:text-lg tracking-tight">
                   {rw.name}
                 </span>
-                <span className="hidden md:inline-block px-1.5 py-0.2 text-[9px] font-bold bg-slate-100 text-slate-700 rounded border border-slate-200">
+                <span className="hidden md:inline-block px-1.5 py-0.5 text-[9px] font-bold bg-slate-100 text-slate-700 rounded border border-slate-200">
                   Resmi
                 </span>
               </div>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 hidden xs:block">
+              <p className="text-[10px] sm:text-[11px] text-slate-500 hidden sm:block">
                 Sistem Pelayanan & Administrasi Terpadu
               </p>
             </div>
@@ -169,7 +169,7 @@ export function Navbar() {
               className="px-2.5 py-1.5 text-xs font-bold text-rose-800 bg-rose-50 border border-rose-200 rounded-lg flex items-center gap-1"
             >
               <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
-              <span className="hidden xs:inline">Lapor</span>
+              <span className="hidden sm:inline">Lapor</span>
             </Link>
 
             <Link
