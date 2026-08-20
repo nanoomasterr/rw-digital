@@ -3,6 +3,7 @@
 import React from "react";
 import { initialEmergencyContacts } from "@/data/mockData";
 import { PhoneCall, ShieldAlert, Shield, Flame, Ambulance, Flag } from "lucide-react";
+import { useApp } from "@/lib/store";
 
 export function EmergencyBar() {
   const { rw } = useApp();

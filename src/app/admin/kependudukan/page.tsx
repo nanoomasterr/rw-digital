@@ -18,7 +18,7 @@ import {
 import { maskNik, maskFamilyCard, formatDate } from "@/lib/utils";
 
 export default function KependudukanPage() {
-  const { families, residents, rts, addResident, addFamily, currentRole } = useApp();
+  const { families, residents, rts, addResident, addFamily, currentRole, rw } = useApp();
   const [activeTab, setActiveTab] = useState<"warga" | "kk">("warga");
   const [selectedRT, setSelectedRT] = useState<string>("ALL");
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>("ALL");

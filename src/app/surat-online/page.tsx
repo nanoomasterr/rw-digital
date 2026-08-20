@@ -22,7 +22,7 @@ import {
 import { maskNik, formatDate } from "@/lib/utils";
 
 export default function SuratOnlinePage() {
-  const { letterRequests, addLetterRequest, rts } = useApp();
+  const { letterRequests, addLetterRequest, rts, rw } = useApp();
   const [activeTab, setActiveTab] = useState<"ajukan" | "tracking">("ajukan");
 
   // Form State

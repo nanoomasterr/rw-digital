@@ -7,7 +7,7 @@ import { useApp } from "@/lib/store";
 import { formatDate } from "@/lib/utils";
 
 export function ArticlesSection() {
-  const { articles } = useApp();
+  const { articles, rw } = useApp();
 
   return (
     <section id="berita" className="py-20 bg-white">
