@@ -30,15 +30,20 @@ export default function AdminSuratPage() {
     approveLetterRW,
     rejectLetter,
     currentRole,
+    activeRTId,
     rw,
     rts,
     residents,
     families,
   } = useApp();
 
+  const isRT = currentRole === "KETUA_RT";
+  const currentRTUnit = rts.find((r) => r.id === activeRTId) || rts[0];
+  const currentRTNumStr = currentRTUnit.rtNumber.replace(/^0+/, "") || "1";
+
   const roleLabels: Record<string, { badge: string }> = {
     KETUA_RW: { badge: "Superadmin RW" },
-    KETUA_RT: { badge: "Admin RT 01" },
+    KETUA_RT: { badge: `Admin RT ${currentRTUnit.rtNumber}` },
     BENDAHARA: { badge: "Keuangan RW" },
     PETUGAS: { badge: "Tim Lapangan" },
     WARGA: { badge: "Warga Biasa" },
@@ -82,19 +87,27 @@ export default function AdminSuratPage() {
   }, []);
 
   const filteredLetters = letterRequests.filter((l) => {
+    const matchRoleRT =
+      !isRT ||
+      l.rtNumber === currentRTUnit.rtNumber ||
+      l.rtNumber === currentRTNumStr ||
+      l.rtNumber === `0${currentRTNumStr}` ||
+      l.rtNumber === `00${currentRTNumStr}`;
     const matchStatus = selectedStatus === "ALL" || l.status === selectedStatus;
     const matchQuery =
       l.residentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       l.trackingCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
       l.nik.includes(searchQuery) ||
       l.letterTitle.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchStatus && matchQuery;
+    return matchRoleRT && matchStatus && matchQuery;
   });
 
   const handleApproveRT = (letter: LetterRequest) => {
-    const approver = currentRole === "KETUA_RT" ? "DASEP HERIANSYAH (Ketua RT 001)" : `Ketua RT ${letter.rtNumber}`;
+    const approver = isRT
+      ? `${currentRTUnit.headName} (Ketua RT ${currentRTUnit.rtNumber})`
+      : `Ketua RT ${letter.rtNumber}`;
     approveLetterRT(letter.id, approver, "Berkas persyaratan & domisili pemohon telah diverifikasi sah.");
-    setActionNotice(`Surat ${letter.trackingCode} berhasil disetujui tingkat RT dan diteruskan ke Ketua RW.`);
+    setActionNotice(`Surat ${letter.trackingCode} berhasil disetujui tingkat RT ${currentRTUnit.rtNumber} dan diteruskan ke Ketua RW.`);
     setTimeout(() => setActionNotice(null), 4000);
   };
 
@@ -140,6 +153,8 @@ export default function AdminSuratPage() {
 
   // Filtered residents for live search
   const filteredResidentOptions = residents.filter((r) => {
+    const matchRoleRT = !isRT || r.rtId === activeRTId;
+    if (!matchRoleRT) return false;
     if (!residentSearchQuery.trim()) return true;
     const q = residentSearchQuery.toLowerCase().trim();
     const fam = families.find((f) => f.id === r.familyId);
@@ -163,7 +178,7 @@ export default function AdminSuratPage() {
     }
     const rtObj = rts.find((rt) => rt.id === res.rtId);
     if (rtObj) {
-      setRtNumber(rtObj.rtNumber);
+      setRtNumber(isRT ? currentRTUnit.rtNumber : rtObj.rtNumber);
     }
     setPhone(res.phone || "081234567890");
     setSelectedResidentId(res.id);
@@ -192,14 +207,16 @@ export default function AdminSuratPage() {
       return;
     }
 
+    const effectiveRtNumber = isRT ? currentRTUnit.rtNumber : rtNumber;
+
     const created = addLetterRequest({
       letterType,
       letterTitle: letterTypeTitles[letterType],
       residentName,
       nik,
       familyCardNumber: familyCardNumber || "3277011205100001",
-      rtNumber,
-      address: address || `Jl. Kebon Rumput No. 12, RT ${rtNumber}/RW 14`,
+      rtNumber: effectiveRtNumber,
+      address: address || `Jl. Kebon Rumput No. 12, RT ${effectiveRtNumber}/RW 14`,
       phone,
       purpose,
     });
@@ -208,8 +225,8 @@ export default function AdminSuratPage() {
       // RT langsung memvalidasi
       approveLetterRT(
         created.id,
-        "DASEP HERIANSYAH (Ketua RT 001)",
-        "Dibuat dan divalidasi langsung oleh Ketua RT 001."
+        `${currentRTUnit.headName} (Ketua RT ${currentRTUnit.rtNumber})`,
+        `Dibuat dan divalidasi langsung oleh Ketua RT ${currentRTUnit.rtNumber}.`
       );
       setActionNotice(
         `Surat ${created.trackingCode} (${residentName}) berhasil dibuat dan diteruskan ke Ketua RW.`
@@ -218,7 +235,7 @@ export default function AdminSuratPage() {
       // RW langsung mengesahkan & menerbitkan
       const randomNum = Math.floor(10 + Math.random() * 90);
       const officialNo = `470/${String(randomNum).padStart(3, "0")}/RW.14/VIII/2026`;
-      approveLetterRT(created.id, `Ketua RT ${rtNumber}`, "Divalidasi di Sekretariat RW.");
+      approveLetterRT(created.id, `Ketua RT ${effectiveRtNumber}`, "Divalidasi di Sekretariat RW.");
       approveLetterRW(created.id, rw.headName, officialNo);
       setActionNotice(
         `Surat ${created.trackingCode} (${residentName}) berhasil diterbitkan resmi dengan No: ${officialNo}.`

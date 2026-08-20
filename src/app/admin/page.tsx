@@ -22,6 +22,7 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 export default function AdminOverviewPage() {
   const {
     currentRole,
+    activeRTId,
     rw,
     rts,
     families,
@@ -32,17 +33,43 @@ export default function AdminOverviewPage() {
     complaints,
   } = useApp();
 
-  const totalKK = families.length;
-  const totalWarga = residents.length;
+  const isRT = currentRole === "KETUA_RT";
+  const currentRTUnit = rts.find((r) => r.id === activeRTId) || rts[0];
+  const currentRTNumStr = currentRTUnit.rtNumber.replace(/^0+/, "") || "1";
 
-  const pendingLetters = letterRequests.filter((l) =>
-    currentRole === "KETUA_RT"
-      ? l.status === "MENUNGGU_RT"
-      : l.status === "MENUNGGU_RW"
+  const totalKK = isRT
+    ? families.filter((f) => f.rtId === activeRTId).length
+    : families.length;
+
+  const totalWarga = isRT
+    ? residents.filter((r) => r.rtId === activeRTId).length
+    : residents.length;
+
+  const pendingLetters = letterRequests.filter((l) => {
+    if (isRT) {
+      const matchRT =
+        l.rtNumber === currentRTUnit.rtNumber ||
+        l.rtNumber === currentRTNumStr ||
+        l.rtNumber === `0${currentRTNumStr}` ||
+        l.rtNumber === `00${currentRTNumStr}`;
+      return l.status === "MENUNGGU_RT" && matchRT;
+    }
+    return l.status === "MENUNGGU_RW";
+  });
+
+  const unpaidInvoices = invoices.filter((i) => {
+    const matchRT =
+      !isRT ||
+      i.rtNumber === currentRTUnit.rtNumber ||
+      i.rtNumber === currentRTNumStr ||
+      i.rtNumber === `0${currentRTNumStr}` ||
+      i.rtNumber === `00${currentRTNumStr}`;
+    return (i.status === "BELUM_BAYAR" || i.status === "MENUNGGU_VERIFIKASI") && matchRT;
+  });
+
+  const pendingComplaints = complaints.filter(
+    (c) => c.status === "TERKIRIM" || c.status === "DIPROSES"
   );
-
-  const unpaidInvoices = invoices.filter((i) => i.status === "BELUM_BAYAR" || i.status === "MENUNGGU_VERIFIKASI");
-  const pendingComplaints = complaints.filter((c) => c.status === "TERKIRIM" || c.status === "DIPROSES");
 
   const currentBalance =
     cashTransactions.length > 0
@@ -57,13 +84,22 @@ export default function AdminOverviewPage() {
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold border border-emerald-500/30">
             <ShieldCheck className="w-4 h-4" />
-            Panel Pengurus {rw.name}
+            {isRT ? `Wilayah Pengurus RT ${currentRTUnit.rtNumber}` : `Panel Pengurus ${rw.name}`}
           </div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
-            Selamat Datang, {currentRole === "KETUA_RW" ? "Bapak Ketua RW" : currentRole === "KETUA_RT" ? "Bapak Ketua RT 01" : currentRole === "BENDAHARA" ? "Ibu Bendahara" : "Petugas Lapangan"}!
+            Selamat Datang,{" "}
+            {currentRole === "KETUA_RW"
+              ? "Bapak Ketua RW"
+              : isRT
+              ? `Bapak ${currentRTUnit.headName} (Ketua RT ${currentRTUnit.rtNumber})`
+              : currentRole === "BENDAHARA"
+              ? "Ibu Bendahara"
+              : "Petugas Lapangan"}!
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
-            Berikut adalah ringkasan kependudukan, antrean permohonan surat warga, dan laporan keuangan kas lingkungan hari ini.
+            {isRT
+              ? `Berikut adalah ringkasan kependudukan warga RT ${currentRTUnit.rtNumber}, antrean verifikasi surat pengantar, dan status iuran warga.`
+              : "Berikut adalah ringkasan kependudukan, antrean permohonan surat warga, dan laporan keuangan kas lingkungan hari ini."}
           </p>
         </div>
 
@@ -90,14 +126,16 @@ export default function AdminOverviewPage() {
         <div className="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-              Total Warga
+              {isRT ? `Warga RT ${currentRTUnit.rtNumber}` : "Total Warga"}
             </span>
             <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
               <Users className="w-5 h-5" />
             </div>
           </div>
           <p className="text-2xl font-black text-slate-900">{totalWarga} Jiwa</p>
-          <p className="text-xs text-slate-500 mt-1">{totalKK} Kepala Keluarga ({rts.length} RT)</p>
+          <p className="text-xs text-slate-500 mt-1">
+            {totalKK} Kepala Keluarga {isRT ? `(RT ${currentRTUnit.rtNumber})` : `(${rts.length} RT)`}
+          </p>
         </div>
 
         {/* Card 2: E-Surat Pending */}

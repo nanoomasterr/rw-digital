@@ -23,7 +23,13 @@ export default function AdminKeuanganPage() {
     verifyInvoice,
     addCashTransaction,
     currentRole,
+    activeRTId,
+    rts,
   } = useApp();
+
+  const isRT = currentRole === "KETUA_RT";
+  const currentRTUnit = rts.find((r) => r.id === activeRTId) || rts[0];
+  const currentRTNumStr = currentRTUnit.rtNumber.replace(/^0+/, "") || "1";
 
   const [activeTab, setActiveTab] = useState<"iuran" | "kas">("iuran");
   const [selectedInvoiceStatus, setSelectedInvoiceStatus] = useState<string>("ALL");
@@ -54,13 +60,19 @@ export default function AdminKeuanganPage() {
 
   // Filter invoices
   const filteredInvoices = invoices.filter((inv) => {
+    const matchRoleRT =
+      !isRT ||
+      inv.rtNumber === currentRTUnit.rtNumber ||
+      inv.rtNumber === currentRTNumStr ||
+      inv.rtNumber === `0${currentRTNumStr}` ||
+      inv.rtNumber === `00${currentRTNumStr}`;
     const matchStatus =
       selectedInvoiceStatus === "ALL" || inv.status === selectedInvoiceStatus;
     const matchQuery =
       inv.headOfFamilyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       inv.familyCardNumber.includes(searchQuery) ||
       inv.houseNumber.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchStatus && matchQuery;
+    return matchRoleRT && matchStatus && matchQuery;
   });
 
   const handleVerify = (inv: Invoice) => {

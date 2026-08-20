@@ -33,8 +33,15 @@ export default function KependudukanPage() {
     updateFamily,
     deleteFamily,
     currentRole,
+    activeRTId,
     rw,
   } = useApp();
+
+  const isRT = currentRole === "KETUA_RT";
+  const currentRTUnit = rts.find((r) => r.id === activeRTId) || rts[0];
+  const availableFamilies = isRT ? families.filter((f) => f.rtId === activeRTId) : families;
+  const availableResidents = isRT ? residents.filter((r) => r.rtId === activeRTId) : residents;
+
   const [activeTab, setActiveTab] = useState<"warga" | "kk">("warga");
   const [selectedRT, setSelectedRT] = useState<string>("ALL");
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>("ALL");
@@ -70,7 +77,7 @@ export default function KependudukanPage() {
   const [editFamAddress, setEditFamAddress] = useState("");
   const [editFamHouseNumber, setEditFamHouseNumber] = useState("");
   const [editFamPhone, setEditFamPhone] = useState("");
-  const [editFamRtId, setEditFamRtId] = useState("rt-01");
+  const [editFamRtId, setEditFamRtId] = useState(activeRTId || "rt-01");
   const [editFamStatus, setEditFamStatus] = useState<ResidentStatus>("TETAP");
 
   // Resident Form State (Tambah)
@@ -83,7 +90,7 @@ export default function KependudukanPage() {
   const [resOccupation, setResOccupation] = useState("Karyawan Swasta");
   const [resFamilyRole, setResFamilyRole] = useState<FamilyRole>("KEPALA_KELUARGA");
   const [resStatus, setResStatus] = useState<ResidentStatus>("TETAP");
-  const [resFamilyId, setResFamilyId] = useState(families[0]?.id || "fam-01");
+  const [resFamilyId, setResFamilyId] = useState(availableFamilies[0]?.id || families[0]?.id || "fam-01");
 
   // Family Form State (Tambah)
   const [famCardNumber, setFamCardNumber] = useState("");
@@ -91,29 +98,31 @@ export default function KependudukanPage() {
   const [famAddress, setFamAddress] = useState("");
   const [famHouseNumber, setFamHouseNumber] = useState("");
   const [famPhone, setFamPhone] = useState("");
-  const [famRtId, setFamRtId] = useState("rt-01");
+  const [famRtId, setFamRtId] = useState(activeRTId || "rt-01");
   const [famStatus, setFamStatus] = useState<ResidentStatus>("TETAP");
 
-  // Filter residents
+  // Filter residents - scoped to RT when currentRole is KETUA_RT
   const filteredResidents = residents.filter((res) => {
-    const matchRT = selectedRT === "ALL" || res.rtId === selectedRT;
+    const matchRoleRT = !isRT || res.rtId === activeRTId;
+    const matchRT = isRT ? true : (selectedRT === "ALL" || res.rtId === selectedRT);
     const matchStatus = selectedStatusFilter === "ALL" || res.status === selectedStatusFilter;
     const matchQuery =
       res.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       res.nik.includes(searchQuery) ||
       res.occupation.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchRT && matchStatus && matchQuery;
+    return matchRoleRT && matchRT && matchStatus && matchQuery;
   });
 
-  // Filter families
+  // Filter families - scoped to RT when currentRole is KETUA_RT
   const filteredFamilies = families.filter((fam) => {
-    const matchRT = selectedRT === "ALL" || fam.rtId === selectedRT;
+    const matchRoleRT = !isRT || fam.rtId === activeRTId;
+    const matchRT = isRT ? true : (selectedRT === "ALL" || fam.rtId === selectedRT);
     const matchStatus = selectedStatusFilter === "ALL" || fam.status === selectedStatusFilter;
     const matchQuery =
       fam.headOfFamilyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       fam.familyCardNumber.includes(searchQuery) ||
       fam.houseNumber.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchRT && matchStatus && matchQuery;
+    return matchRoleRT && matchRT && matchStatus && matchQuery;
   });
 
   const handleAddResident = (e: React.FormEvent) => {
@@ -124,7 +133,7 @@ export default function KependudukanPage() {
     }
 
     const parentFamily = families.find((f) => f.id === resFamilyId);
-    const rtId = parentFamily ? parentFamily.rtId : "rt-01";
+    const rtId = isRT ? activeRTId : (parentFamily ? parentFamily.rtId : "rt-01");
 
     addResident({
       familyId: resFamilyId,
@@ -144,11 +153,15 @@ export default function KependudukanPage() {
     setResidentModalOpen(false);
     setResName("");
     setResNik("");
-    setNotice(`Data warga ${resName} berhasil ditambahkan.`);
+    setNotice(`Data warga ${resName} berhasil ditambahkan ke RT ${currentRTUnit.rtNumber}.`);
     setTimeout(() => setNotice(null), 4000);
   };
 
   const handleOpenEditResident = (res: Resident) => {
+    if (isRT && res.rtId !== activeRTId) {
+      alert("Akses ditolak: Anda hanya dapat mengedit data warga pada RT Anda sendiri.");
+      return;
+    }
     setEditResId(res.id);
     setEditResName(res.fullName);
     setEditResNik(res.nik);
@@ -159,7 +172,7 @@ export default function KependudukanPage() {
     setEditResOccupation(res.occupation || "Karyawan Swasta");
     setEditResFamilyRole(res.familyRole || "KEPALA_KELUARGA");
     setEditResStatus(res.status || "TETAP");
-    setEditResFamilyId(res.familyId || families[0]?.id || "");
+    setEditResFamilyId(res.familyId || availableFamilies[0]?.id || "");
     setEditResPhone(res.phone || "");
     setEditResidentModalOpen(true);
   };
@@ -172,7 +185,7 @@ export default function KependudukanPage() {
     }
 
     const parentFamily = families.find((f) => f.id === editResFamilyId);
-    const rtId = parentFamily ? parentFamily.rtId : "rt-01";
+    const rtId = isRT ? activeRTId : (parentFamily ? parentFamily.rtId : "rt-01");
 
     updateResident(editResId, {
       fullName: editResName,
@@ -195,6 +208,12 @@ export default function KependudukanPage() {
   };
 
   const handleDeleteResident = (id: string, name: string) => {
+    const res = residents.find((r) => r.id === id);
+    if (isRT && res && res.rtId !== activeRTId) {
+      alert("Akses ditolak: Anda hanya dapat menghapus data warga pada RT Anda sendiri.");
+      return;
+    }
+
     if (confirm(`Apakah Anda yakin ingin menghapus data warga "${name}"?`)) {
       deleteResident(id);
       setNotice(`Data warga ${name} berhasil dihapus.`);
@@ -209,8 +228,10 @@ export default function KependudukanPage() {
       return;
     }
 
+    const rtId = isRT ? activeRTId : famRtId;
+
     addFamily({
-      rtId: famRtId,
+      rtId,
       familyCardNumber: famCardNumber,
       headOfFamilyName: famHeadName,
       address: famAddress || "Jl. Mawar No. 10",
@@ -222,18 +243,22 @@ export default function KependudukanPage() {
     setFamilyModalOpen(false);
     setFamCardNumber("");
     setFamHeadName("");
-    setNotice(`Kartu Keluarga ${famHeadName} berhasil ditambahkan.`);
+    setNotice(`Kartu Keluarga ${famHeadName} berhasil ditambahkan ke RT ${currentRTUnit.rtNumber}.`);
     setTimeout(() => setNotice(null), 4000);
   };
 
   const handleOpenEditFamily = (fam: Family) => {
+    if (isRT && fam.rtId !== activeRTId) {
+      alert("Akses ditolak: Anda hanya dapat mengedit data KK pada RT Anda sendiri.");
+      return;
+    }
     setEditFamId(fam.id);
     setEditFamCardNumber(fam.familyCardNumber);
     setEditFamHeadName(fam.headOfFamilyName);
     setEditFamAddress(fam.address || "");
     setEditFamHouseNumber(fam.houseNumber || "");
     setEditFamPhone(fam.phone || "");
-    setEditFamRtId(fam.rtId || "rt-01");
+    setEditFamRtId(isRT ? activeRTId : (fam.rtId || "rt-01"));
     setEditFamStatus(fam.status || "TETAP");
     setEditFamilyModalOpen(true);
   };
@@ -245,13 +270,15 @@ export default function KependudukanPage() {
       return;
     }
 
+    const rtId = isRT ? activeRTId : editFamRtId;
+
     updateFamily(editFamId, {
       familyCardNumber: editFamCardNumber,
       headOfFamilyName: editFamHeadName,
       address: editFamAddress,
       houseNumber: editFamHouseNumber,
       phone: editFamPhone,
-      rtId: editFamRtId,
+      rtId,
       status: editFamStatus,
     });
 
@@ -261,6 +288,12 @@ export default function KependudukanPage() {
   };
 
   const handleDeleteFamily = (id: string, name: string) => {
+    const fam = families.find((f) => f.id === id);
+    if (isRT && fam && fam.rtId !== activeRTId) {
+      alert("Akses ditolak: Anda hanya dapat menghapus data KK pada RT Anda sendiri.");
+      return;
+    }
+
     if (confirm(`Apakah Anda yakin ingin menghapus data Kartu Keluarga "${name}" beserta seluruh anggotanya?`)) {
       deleteFamily(id);
       setNotice(`Kartu Keluarga ${name} berhasil dihapus.`);
@@ -432,18 +465,25 @@ export default function KependudukanPage() {
           </div>
 
           <div className="sm:col-span-3">
-            <select
-              value={selectedRT}
-              onChange={(e) => setSelectedRT(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white text-slate-700 outline-none"
-            >
-              <option value="ALL">Semua Wilayah RT (RT 01 - RT 05)</option>
-              {rts.map((rt) => (
-                <option key={rt.id} value={rt.id}>
-                  RT {rt.rtNumber} (Ketua: {rt.headName})
-                </option>
-              ))}
-            </select>
+            {isRT ? (
+              <div className="w-full px-3 py-2 rounded-xl bg-blue-50 border border-blue-200 text-xs font-bold text-blue-800 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                <span>Wilayah: RT {currentRTUnit.rtNumber} ({currentRTUnit.headName})</span>
+              </div>
+            ) : (
+              <select
+                value={selectedRT}
+                onChange={(e) => setSelectedRT(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white text-slate-700 outline-none"
+              >
+                <option value="ALL">Semua Wilayah RT (RT 01 - RT 05)</option>
+                {rts.map((rt) => (
+                  <option key={rt.id} value={rt.id}>
+                    RT {rt.rtNumber} (Ketua: {rt.headName})
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
           <div className="sm:col-span-3">
@@ -908,11 +948,11 @@ export default function KependudukanPage() {
                   <select
                     value={resFamilyId}
                     onChange={(e) => setResFamilyId(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white font-medium"
                   >
-                    {families.map((f) => (
+                    {availableFamilies.map((f) => (
                       <option key={f.id} value={f.id}>
-                        KK {f.headOfFamilyName} ({f.houseNumber})
+                        KK {f.headOfFamilyName} ({f.houseNumber}) - RT {rts.find(r => r.id === f.rtId)?.rtNumber || "01"}
                       </option>
                     ))}
                   </select>
@@ -1041,17 +1081,23 @@ export default function KependudukanPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">Wilayah RT</label>
-                  <select
-                    value={famRtId}
-                    onChange={(e) => setFamRtId(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
-                  >
-                    {rts.map((rt) => (
-                      <option key={rt.id} value={rt.id}>
-                        RT {rt.rtNumber} (Ketua: {rt.headName})
-                      </option>
-                    ))}
-                  </select>
+                  {isRT ? (
+                    <div className="px-3 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xs font-bold text-blue-900">
+                      RT {currentRTUnit.rtNumber} ({currentRTUnit.headName})
+                    </div>
+                  ) : (
+                    <select
+                      value={famRtId}
+                      onChange={(e) => setFamRtId(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
+                    >
+                      {rts.map((rt) => (
+                        <option key={rt.id} value={rt.id}>
+                          RT {rt.rtNumber} (Ketua: {rt.headName})
+                        </option>
+                      ))}
+                    </select>
+                  )}
                 </div>
 
                 <div>
@@ -1233,7 +1279,7 @@ export default function KependudukanPage() {
                   onChange={(e) => setEditResFamilyId(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white font-medium"
                 >
-                  {families.map((fam) => (
+                  {availableFamilies.map((fam) => (
                     <option key={fam.id} value={fam.id}>
                       {fam.headOfFamilyName} (No. KK: {fam.familyCardNumber}) - {fam.houseNumber}
                     </option>
@@ -1326,17 +1372,23 @@ export default function KependudukanPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">Wilayah RT</label>
-                  <select
-                    value={editFamRtId}
-                    onChange={(e) => setEditFamRtId(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white font-medium"
-                  >
-                    {rts.map((rt) => (
-                      <option key={rt.id} value={rt.id}>
-                        RT {rt.rtNumber} (Ketua: {rt.headName})
-                      </option>
-                    ))}
-                  </select>
+                  {isRT ? (
+                    <div className="px-3 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xs font-bold text-blue-900">
+                      RT {currentRTUnit.rtNumber} ({currentRTUnit.headName})
+                    </div>
+                  ) : (
+                    <select
+                      value={editFamRtId}
+                      onChange={(e) => setEditFamRtId(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white font-medium"
+                    >
+                      {rts.map((rt) => (
+                        <option key={rt.id} value={rt.id}>
+                          RT {rt.rtNumber} (Ketua: {rt.headName})
+                        </option>
+                      ))}
+                    </select>
+                  )}
                 </div>
 
                 <div>

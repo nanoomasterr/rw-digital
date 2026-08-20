@@ -76,10 +76,12 @@ export default function AdminLayout({
     { href: "/admin/cms", label: "CMS Berita & UMKM", icon: Store },
   ];
 
+  const activeRT = rts.find((rt) => rt.id === activeRTId) || rts[0];
+
   const roleLabels: Record<UserRole, { title: string; badge: string; color: string }> = {
-    KETUA_RW: { title: "TAUFIK A. (Ketua RW 14)", badge: "Superadmin RW", color: "bg-emerald-500" },
-    KETUA_RT: { title: "DASEP H. (Ketua RT 001)", badge: "Admin RT 01", color: "bg-blue-500" },
-    BENDAHARA: { title: "Hj. Ratna (Bendahara)", badge: "Keuangan RW", color: "bg-purple-500" },
+    KETUA_RW: { title: `${rw.headName || "TAUFIK A."} (Ketua RW 14)`, badge: "Superadmin RW", color: "bg-emerald-500" },
+    KETUA_RT: { title: `${activeRT?.headName || "DASEP H."} (Ketua RT ${activeRT?.rtNumber || "01"})`, badge: `Admin RT ${activeRT?.rtNumber || "01"}`, color: "bg-blue-500" },
+    BENDAHARA: { title: "Hj. Ratna (Bendahara RW)", badge: "Keuangan RW", color: "bg-purple-500" },
     PETUGAS: { title: "Sukardi (Petugas/Satpam)", badge: "Tim Lapangan", color: "bg-amber-500" },
     WARGA: { title: "Dimas (Portal Warga)", badge: "Warga Biasa", color: "bg-slate-500" },
   };
@@ -188,7 +190,7 @@ export default function AdminLayout({
                   type="button"
                   onClick={() => {
                     setCurrentRole(r);
-                    if (r === "KETUA_RT") setActiveRTId("rt-01");
+                    if (r === "KETUA_RT" && !activeRTId) setActiveRTId("rt-01");
                   }}
                   className={`w-full px-2.5 py-1.5 rounded-lg text-left text-xs font-medium flex items-center justify-between transition-all ${
                     currentRole === r
@@ -201,6 +203,25 @@ export default function AdminLayout({
                 </button>
               ))}
             </div>
+
+            {currentRole === "KETUA_RT" && (
+              <div className="pt-2 mt-2 border-t border-slate-700/60">
+                <label className="text-[10px] text-slate-400 font-bold block mb-1">
+                  Wilayah RT yang Dikelola:
+                </label>
+                <select
+                  value={activeRTId}
+                  onChange={(e) => setActiveRTId(e.target.value)}
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-emerald-400 font-bold outline-none cursor-pointer"
+                >
+                  {rts.map((rt) => (
+                    <option key={rt.id} value={rt.id} className="bg-slate-900 text-white">
+                      RT {rt.rtNumber} ({rt.headName})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           <Link
