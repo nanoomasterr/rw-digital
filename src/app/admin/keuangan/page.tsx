@@ -111,12 +111,24 @@ export default function AdminKeuanganPage() {
     document.body.removeChild(link);
   };
 
+  const isFinanceOfficer = currentRole === "BENDAHARA" || currentRole === "KETUA_RW";
+
   return (
     <div className="space-y-6">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
+              Otoritas Pembukuan: Bendahara & Ketua RW
+            </span>
+            {!isFinanceOfficer && (
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                Mode Monitor
+              </span>
+            )}
+          </div>
           <h1 className="text-2xl font-black text-slate-900 tracking-tight">
             Keuangan, E-Kas & Billing Iuran RW
           </h1>
@@ -137,14 +149,20 @@ export default function AdminKeuanganPage() {
             </button>
           )}
 
-          <button
-            type="button"
-            onClick={() => setTxModalOpen(true)}
-            className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5 self-start sm:self-auto"
-          >
-            <PlusCircle className="w-4 h-4" />
-            <span>Catat Transaksi Kas</span>
-          </button>
+          {isFinanceOfficer ? (
+            <button
+              type="button"
+              onClick={() => setTxModalOpen(true)}
+              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5 self-start sm:self-auto"
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span>Catat Transaksi Kas</span>
+            </button>
+          ) : (
+            <span className="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-500 text-xs font-semibold border border-slate-200">
+              Input Kas: Khusus Bendahara & RW
+            </span>
+          )}
         </div>
       </div>
 
@@ -299,23 +317,35 @@ export default function AdminKeuanganPage() {
 
                 <div className="pt-2 border-t border-slate-100 flex justify-end">
                   {inv.status === "MENUNGGU_VERIFIKASI" ? (
-                    <button
-                      type="button"
-                      onClick={() => handleVerify(inv)}
-                      className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow"
-                    >
-                      Verifikasi Lunas ({inv.paymentMethod})
-                    </button>
+                    isFinanceOfficer ? (
+                      <button
+                        type="button"
+                        onClick={() => handleVerify(inv)}
+                        className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow"
+                      >
+                        Verifikasi Lunas ({inv.paymentMethod})
+                      </button>
+                    ) : (
+                      <span className="text-[11px] text-amber-700 font-semibold bg-amber-50 px-3 py-1 rounded-lg border border-amber-200">
+                        Menunggu Verifikasi Bendahara
+                      </span>
+                    )
                   ) : inv.status === "LUNAS" ? (
                     <span className="text-[11px] text-slate-400 font-medium">Pembayaran Sah</span>
                   ) : (
-                    <button
-                      type="button"
-                      onClick={() => handleVerify(inv)}
-                      className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold"
-                    >
-                      Tandai Lunas
-                    </button>
+                    isFinanceOfficer ? (
+                      <button
+                        type="button"
+                        onClick={() => handleVerify(inv)}
+                        className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold"
+                      >
+                        Tandai Lunas
+                      </button>
+                    ) : (
+                      <span className="text-[11px] text-slate-400 font-medium italic">
+                        Belum Terbayar
+                      </span>
+                    )
                   )}
                 </div>
               </div>
@@ -371,23 +401,33 @@ export default function AdminKeuanganPage() {
                     </td>
                     <td className="px-6 py-3.5 text-right">
                       {inv.status === "MENUNGGU_VERIFIKASI" ? (
-                        <button
-                          type="button"
-                          onClick={() => handleVerify(inv)}
-                          className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow"
-                        >
-                          Verifikasi Lunas
-                        </button>
+                        isFinanceOfficer ? (
+                          <button
+                            type="button"
+                            onClick={() => handleVerify(inv)}
+                            className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow"
+                          >
+                            Verifikasi Lunas
+                          </button>
+                        ) : (
+                          <span className="text-[10px] text-amber-700 font-semibold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                            Menunggu Bendahara
+                          </span>
+                        )
                       ) : inv.status === "LUNAS" ? (
                         <span className="text-[11px] text-slate-400 font-medium">Sah</span>
                       ) : (
-                        <button
-                          type="button"
-                          onClick={() => handleVerify(inv)}
-                          className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold"
-                        >
-                          Tandai Lunas
-                        </button>
+                        isFinanceOfficer ? (
+                          <button
+                            type="button"
+                            onClick={() => handleVerify(inv)}
+                            className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold"
+                          >
+                            Tandai Lunas
+                          </button>
+                        ) : (
+                          <span className="text-[10px] text-slate-400 font-medium italic">-</span>
+                        )
                       )}
                     </td>
                   </tr>

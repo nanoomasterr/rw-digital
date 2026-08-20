@@ -149,12 +149,24 @@ export default function KependudukanPage() {
     document.body.removeChild(link);
   };
 
+  const isCitizenManager = currentRole === "KETUA_RW" || currentRole === "KETUA_RT";
+
   return (
     <div className="space-y-6">
       
       {/* Header Title & CTA */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+              Otoritas Kependudukan: Pengurus RT & RW
+            </span>
+            {!isCitizenManager && (
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                Mode Monitor
+              </span>
+            )}
+          </div>
           <h1 className="text-2xl font-black text-slate-900 tracking-tight">
             Buku Induk Kependudukan & Kartu Keluarga
           </h1>
@@ -172,22 +184,31 @@ export default function KependudukanPage() {
             <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
             <span>Ekspor CSV</span>
           </button>
-          <button
-            type="button"
-            onClick={() => setFamilyModalOpen(true)}
-            className="px-3.5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5"
-          >
-            <PlusCircle className="w-4 h-4 text-emerald-400" />
-            <span>Tambah KK</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setResidentModalOpen(true)}
-            className="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5"
-          >
-            <PlusCircle className="w-4 h-4" />
-            <span>Tambah Warga</span>
-          </button>
+          
+          {isCitizenManager ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setFamilyModalOpen(true)}
+                className="px-3.5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5"
+              >
+                <PlusCircle className="w-4 h-4 text-emerald-400" />
+                <span>Tambah KK</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setResidentModalOpen(true)}
+                className="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5"
+              >
+                <PlusCircle className="w-4 h-4" />
+                <span>Tambah Warga</span>
+              </button>
+            </>
+          ) : (
+            <span className="px-3 py-2 rounded-xl bg-slate-100 text-slate-500 text-xs font-semibold border border-slate-200">
+              Input Warga: Khusus RT & RW
+            </span>
+          )}
         </div>
       </div>
 

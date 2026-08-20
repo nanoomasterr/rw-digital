@@ -23,9 +23,11 @@ export default function AdminCMSPage() {
     facilityBookings,
     updateBookingStatus,
     rts,
+    currentRole,
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<"berita" | "umkm" | "booking">("berita");
+  const isCmsAuthorized = currentRole === "KETUA_RW";
 
   // Article Form State
   const [artModalOpen, setArtModalOpen] = useState(false);
@@ -69,6 +71,16 @@ export default function AdminCMSPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+              Otoritas Publikasi: Sekretariat & Ketua RW
+            </span>
+            {!isCmsAuthorized && (
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                Mode Monitor
+              </span>
+            )}
+          </div>
           <h1 className="text-2xl font-black text-slate-900 tracking-tight">
             CMS Berita, UMKM & Fasilitas RW
           </h1>
@@ -78,14 +90,20 @@ export default function AdminCMSPage() {
         </div>
 
         {activeTab === "berita" && (
-          <button
-            type="button"
-            onClick={() => setArtModalOpen(true)}
-            className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5 self-start sm:self-auto"
-          >
-            <PlusCircle className="w-4 h-4" />
-            <span>Tulis Berita / Pengumuman</span>
-          </button>
+          isCmsAuthorized ? (
+            <button
+              type="button"
+              onClick={() => setArtModalOpen(true)}
+              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5 self-start sm:self-auto"
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span>Tulis Berita / Pengumuman</span>
+            </button>
+          ) : (
+            <span className="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-500 text-xs font-semibold border border-slate-200">
+              Publikasi: Khusus Sekretariat & RW
+            </span>
+          )
         )}
       </div>
 
