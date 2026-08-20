@@ -50,6 +50,9 @@ export default function SuratOnlinePage() {
     KETERANGAN_BELUM_MENIKAH: "Surat Keterangan Belum Menikah",
     PENGANTAR_NIKAH: "Surat Pengantar Nikah (N1-N4)",
     IZIN_KERAMAIAN: "Surat Pengantar Izin Keramaian Acara",
+    SURAT_PENGANTAR_SKCK: "Surat Pengantar Pembuatan SKCK",
+    SURAT_KETERANGAN_USAHA: "Surat Keterangan Domisili Usaha (SKDU)",
+    SURAT_KETERANGAN_DOMISILI: "Surat Keterangan Domisili Tinggal",
   };
 
   const handleSubmit = (e: React.FormEvent) => {

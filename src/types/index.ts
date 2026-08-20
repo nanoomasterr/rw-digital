@@ -75,7 +75,10 @@ export type LetterType =
   | 'KETERANGAN_KEMATIAN'
   | 'KETERANGAN_BELUM_MENIKAH'
   | 'PENGANTAR_NIKAH'
-  | 'IZIN_KERAMAIAN';
+  | 'IZIN_KERAMAIAN'
+  | 'SURAT_PENGANTAR_SKCK'
+  | 'SURAT_KETERANGAN_USAHA'
+  | 'SURAT_KETERANGAN_DOMISILI';
 
 export interface LetterRequest {
   id: string;
@@ -101,7 +104,7 @@ export interface LetterRequest {
   // Persetujuan RW
   rwApprovedAt?: string;
   rwApprovedBy?: string;
-  letterOfficialNumber?: string; // e.g. "470/012/RW.05/VIII/2026"
+  letterOfficialNumber?: string; // e.g. "470/012/RW.14/VIII/2026"
   verificationToken: string; // Hash token untuk QR code
   
   rejectionReason?: string;
@@ -110,6 +113,11 @@ export interface LetterRequest {
 
 export type InvoiceStatus = 'BELUM_BAYAR' | 'MENUNGGU_VERIFIKASI' | 'LUNAS' | 'KADALUWARSA';
 export type PaymentMethod = 'QRIS' | 'TRANSFER_BANK' | 'TUNAI';
+
+export interface InvoiceItem {
+  name: string;
+  amount: number;
+}
 
 export interface Invoice {
   id: string;
@@ -120,16 +128,17 @@ export interface Invoice {
   rtNumber: string;
   houseNumber: string;
   billingPeriod: string; // e.g. "Agustus 2026"
-  month: number;
-  year: number;
-  breakdown: {
+  month?: number;
+  year?: number;
+  items?: InvoiceItem[];
+  breakdown?: {
     securityFee: number; // Iuran Keamanan
     cleanlinessFee: number; // Iuran Sampah / Kebersihan
     communityFee: number; // Iuran Kas RW / Sosial
   };
   totalAmount: number;
   status: InvoiceStatus;
-  dueDate: string;
+  dueDate?: string;
   
   // Payment detail
   paymentMethod?: PaymentMethod;
@@ -181,6 +190,7 @@ export interface Complaint {
   isAnonymous: boolean;
   status: ComplaintStatus;
   submittedAt: string;
+  updatedAt?: string;
   assignedTo?: string; // Seksi Keamanan / Seksi Kebersihan
   resolvedAt?: string;
   resolutionNotes?: string;
@@ -221,14 +231,15 @@ export interface UMKMItem {
   ownerName: string;
   rtNumber: string;
   businessName: string;
-  category: 'KULINER' | 'FASHION' | 'JASA' | 'SEMBAKO' | 'KERAJINAN';
+  category: 'KULINER' | 'FASHION' | 'JASA' | 'SEMBAKO' | 'KERAJINAN' | string;
   description: string;
   priceRange: string;
   whatsappNumber: string;
   address: string;
   imageUrl: string;
   rating?: number;
-  isOpen: boolean;
+  isOpen?: boolean;
+  isVerified?: boolean;
 }
 
 export interface Article {

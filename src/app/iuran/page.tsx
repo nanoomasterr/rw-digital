@@ -156,18 +156,29 @@ export default function IuranPage() {
                       <span>Periode Tagihan:</span>
                       <strong className="text-slate-900">{inv.billingPeriod}</strong>
                     </div>
-                    <div className="flex justify-between items-center text-slate-500">
-                      <span>• Keamanan & Ronda:</span>
-                      <span>{formatCurrency(inv.breakdown.securityFee)}</span>
-                    </div>
-                    <div className="flex justify-between items-center text-slate-500">
-                      <span>• Kebersihan & Truk Sampah:</span>
-                      <span>{formatCurrency(inv.breakdown.cleanlinessFee)}</span>
-                    </div>
-                    <div className="flex justify-between items-center text-slate-500">
-                      <span>• Dana Sosial & Kas RW:</span>
-                      <span>{formatCurrency(inv.breakdown.communityFee)}</span>
-                    </div>
+                    {inv.items ? (
+                      inv.items.map((item, idx) => (
+                        <div key={idx} className="flex justify-between items-center text-slate-500">
+                          <span>• {item.name}:</span>
+                          <span>{formatCurrency(item.amount)}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <>
+                        <div className="flex justify-between items-center text-slate-500">
+                          <span>• Keamanan & Ronda:</span>
+                          <span>{formatCurrency(inv.breakdown?.securityFee || 40000)}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-slate-500">
+                          <span>• Kebersihan & Truk Sampah:</span>
+                          <span>{formatCurrency(inv.breakdown?.cleanlinessFee || 35000)}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-slate-500">
+                          <span>• Dana Sosial & Kas RW:</span>
+                          <span>{formatCurrency(inv.breakdown?.communityFee || 25000)}</span>
+                        </div>
+                      </>
+                    )}
                     <div className="pt-2 border-t border-slate-200 flex justify-between items-center text-sm font-black text-slate-900">
                       <span>Total Tagihan:</span>
                       <span className="text-emerald-700">{formatCurrency(inv.totalAmount)}</span>
