@@ -9,17 +9,13 @@ import {
   FileText,
   CreditCard,
   AlertCircle,
-  CalendarDays,
   Store,
-  Settings,
-  ShieldCheck,
   Building2,
+  ExternalLink,
+  ShieldCheck,
   Menu,
   X,
-  ExternalLink,
   ChevronDown,
-  UserCheck,
-  LogOut,
 } from "lucide-react";
 import { useApp } from "@/lib/store";
 import { UserRole } from "@/types";
@@ -31,18 +27,30 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
-  
-  const { currentRole, setCurrentRole, activeRTId, setActiveRTId, rw, rts, letterRequests, complaints, invoices } = useApp();
+  const {
+    currentRole,
+    setCurrentRole,
+    rw,
+    rts,
+    activeRTId,
+    setActiveRTId,
+    complaints,
+    letterRequests,
+    invoices,
+  } = useApp();
 
-  const pendingLettersCount = letterRequests.filter((l) =>
-    currentRole === "KETUA_RT"
-      ? l.status === "MENUNGGU_RT" && l.rtNumber === "001"
-      : l.status === "MENUNGGU_RW"
+  // Pending counts
+  const pendingLettersCount = letterRequests.filter(
+    (l) => l.status === "MENUNGGU_RT" || l.status === "MENUNGGU_RW"
   ).length;
 
-  const pendingComplaintsCount = complaints.filter((c) => c.status === "TERKIRIM" || c.status === "DIPROSES").length;
-  const pendingInvoicesCount = invoices.filter((i) => i.status === "MENUNGGU_VERIFIKASI").length;
+  const pendingComplaintsCount = complaints.filter(
+    (c) => c.status === "TERKIRIM" || c.status === "DIPROSES"
+  ).length;
+
+  const pendingInvoicesCount = invoices.filter(
+    (i) => i.status === "MENUNGGU_VERIFIKASI"
+  ).length;
 
   const navItems = [
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -77,10 +85,10 @@ export default function AdminLayout({
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col lg:flex-row overflow-x-hidden w-full max-w-full">
+    <div className="h-screen w-full flex flex-col lg:flex-row bg-slate-100 overflow-hidden">
       
       {/* Mobile Header Bar */}
-      <div className="lg:hidden bg-slate-900 text-white px-4 py-3 flex items-center justify-between border-b border-slate-800 z-30">
+      <div className="lg:hidden shrink-0 bg-slate-900 text-white px-4 py-3 flex items-center justify-between border-b border-slate-800 z-30">
         <Link href="/admin" className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950 font-bold">
             <ShieldCheck className="w-5 h-5" />
@@ -92,6 +100,7 @@ export default function AdminLayout({
           type="button"
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="p-2 text-slate-300 hover:text-white rounded-lg"
+          aria-label="Toggle Sidebar"
         >
           {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
@@ -101,13 +110,13 @@ export default function AdminLayout({
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 z-30 bg-slate-950/60 backdrop-blur-sm lg:hidden animate-in fade-in"
+          className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm lg:hidden animate-in fade-in"
         />
       )}
 
-      {/* Sidebar Navigation */}
+      {/* Sidebar Navigation - Fixed & Stationary */}
       <aside
-        className={`fixed lg:sticky top-0 left-0 h-screen w-64 bg-slate-900 text-slate-300 flex flex-col justify-between p-4 z-40 transition-transform duration-300 ${
+        className={`fixed lg:static top-0 left-0 h-full w-64 bg-slate-900 text-slate-300 flex flex-col justify-between p-4 z-50 lg:z-auto shrink-0 overflow-y-auto transition-transform duration-300 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         } border-r border-slate-800`}
       >
@@ -205,10 +214,10 @@ export default function AdminLayout({
       </aside>
 
       {/* Main Admin Content Wrapper */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
         
-        {/* Top Header Bar */}
-        <header className="sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+        {/* Top Header Bar - Fixed at top of content area */}
+        <header className="shrink-0 bg-white/95 backdrop-blur border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between z-20">
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2">
               <span className="text-xs text-slate-500 font-medium">Masuk Sebagai:</span>
@@ -229,9 +238,11 @@ export default function AdminLayout({
           </div>
         </header>
 
-        {/* Page Children Container */}
-        <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto">
-          {children}
+        {/* Page Children Container - Scrollable Area */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-8 w-full">
+          <div className="max-w-7xl w-full mx-auto">
+            {children}
+          </div>
         </main>
       </div>
 
