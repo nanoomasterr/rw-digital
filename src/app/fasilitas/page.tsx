@@ -130,16 +130,16 @@ export default function FasilitasPage() {
                     {fac.description}
                   </p>
 
-                  {/* Rules */}
+                  {/* Fasilitas & Ketentuan */}
                   <div className="pt-3 border-t border-slate-100">
                     <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-                      Ketentuan Penggunaan:
+                      Fasilitas & Ketentuan:
                     </h4>
                     <ul className="space-y-1 text-xs text-slate-600">
-                      {fac.rules.map((rule, idx) => (
+                      {(fac.facilitiesIncluded || fac.rules || []).map((item, idx) => (
                         <li key={idx} className="flex items-start gap-1.5">
                           <span className="text-emerald-600 font-bold">✓</span>
-                          <span>{rule}</span>
+                          <span>{item}</span>
                         </li>
                       ))}
                     </ul>

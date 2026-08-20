@@ -190,13 +190,15 @@ export interface Complaint {
 export interface Facility {
   id: string;
   name: string;
-  category: 'BALAI_WARGA' | 'LAPANGAN_OLAHRAGA' | 'TENDA_KURSI' | 'SOUND_SYSTEM';
+  category: string;
   capacity?: string;
   description: string;
   location: string;
   rentalFee: number; // 0 jika gratis untuk warga
   imageUrl: string;
-  rules: string[];
+  rules?: string[];
+  facilitiesIncluded?: string[];
+  isAvailable?: boolean;
 }
 
 export interface FacilityBooking {
