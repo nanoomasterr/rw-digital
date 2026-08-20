@@ -69,8 +69,8 @@ export default function AdminLayout({
   ];
 
   const roleLabels: Record<UserRole, { title: string; badge: string; color: string }> = {
-    KETUA_RW: { title: "H. Asep (Ketua RW 14)", badge: "Superadmin RW", color: "bg-emerald-500" },
-    KETUA_RT: { title: "Dadang (Ketua RT 001)", badge: "Admin RT 01", color: "bg-blue-500" },
+    KETUA_RW: { title: "TAUFIK A. (Ketua RW 14)", badge: "Superadmin RW", color: "bg-emerald-500" },
+    KETUA_RT: { title: "DASEP H. (Ketua RT 001)", badge: "Admin RT 01", color: "bg-blue-500" },
     BENDAHARA: { title: "Hj. Ratna (Bendahara)", badge: "Keuangan RW", color: "bg-purple-500" },
     PETUGAS: { title: "Sukardi (Petugas/Satpam)", badge: "Tim Lapangan", color: "bg-amber-500" },
     WARGA: { title: "Dimas (Portal Warga)", badge: "Warga Biasa", color: "bg-slate-500" },

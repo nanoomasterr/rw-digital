@@ -83,7 +83,7 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const STORAGE_KEY = "rw_digital_db_v2_padasuka14";
+const STORAGE_KEY = "rw_digital_db_v3_padasuka14_official";
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [currentRole, setCurrentRole] = useState<UserRole>("KETUA_RW");

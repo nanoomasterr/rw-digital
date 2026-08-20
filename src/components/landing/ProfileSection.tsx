@@ -20,7 +20,7 @@ export function ProfileSection() {
             
             <div className="flex items-center gap-4 mb-6">
               <div className="w-16 h-16 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold text-2xl shadow-lg shrink-0">
-                AS
+                TA
               </div>
               <div>
                 <h3 className="font-extrabold text-slate-900 text-lg">

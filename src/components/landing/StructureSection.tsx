@@ -68,7 +68,7 @@ export function StructureSection() {
             <Building2 className="w-4 h-4 text-emerald-600" />
             Daftar Ketua Rukun Tetangga (RT 01 - RT 0{rts.length})
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {rts.map((rt) => (
               <div
                 key={rt.id}

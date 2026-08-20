@@ -51,7 +51,7 @@ export default function AdminSuratPage() {
   });
 
   const handleApproveRT = (letter: LetterRequest) => {
-    const approver = currentRole === "KETUA_RT" ? "Dadang Kusnadi (Ketua RT 001)" : `Ketua RT ${letter.rtNumber}`;
+    const approver = currentRole === "KETUA_RT" ? "DASEP HERIANSYAH (Ketua RT 001)" : `Ketua RT ${letter.rtNumber}`;
     approveLetterRT(letter.id, approver, "Berkas persyaratan & domisili pemohon telah diverifikasi sah.");
     setActionNotice(`Surat ${letter.trackingCode} berhasil disetujui tingkat RT dan diteruskan ke Ketua RW.`);
     setTimeout(() => setActionNotice(null), 4000);

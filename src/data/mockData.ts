@@ -24,7 +24,7 @@ export const initialRW: RWUnit = {
   province: "Jawa Barat",
   postalCode: "40526",
   address: "Jl. Kebon Rumput No. 14, Kel. Padasuka",
-  headName: "H. Asep Suryana, S.E.",
+  headName: "TAUFIK ABDURAKHMAN",
   headPhone: "081322114414",
   bankAccount: {
     bankName: "Bank BJB / BCA",
@@ -39,7 +39,7 @@ export const initialRTs: RTUnit[] = [
     id: "rt-01",
     rwId: "rw-14",
     rtNumber: "001",
-    headName: "Dadang Kusnadi",
+    headName: "DASEP HERIANSYAH",
     headPhone: "081223344551",
     totalFamilies: 42,
     totalResidents: 158,
@@ -48,7 +48,7 @@ export const initialRTs: RTUnit[] = [
     id: "rt-02",
     rwId: "rw-14",
     rtNumber: "002",
-    headName: "Yana Mulyana",
+    headName: "ASEP ISHAK",
     headPhone: "081334455662",
     totalFamilies: 38,
     totalResidents: 142,
@@ -57,7 +57,7 @@ export const initialRTs: RTUnit[] = [
     id: "rt-03",
     rwId: "rw-14",
     rtNumber: "003",
-    headName: "Agus Heryana, S.Pd.",
+    headName: "DIDIN WAHIDIN",
     headPhone: "081545566773",
     totalFamilies: 45,
     totalResidents: 170,
@@ -66,7 +66,7 @@ export const initialRTs: RTUnit[] = [
     id: "rt-04",
     rwId: "rw-14",
     rtNumber: "004",
-    headName: "Dedi Supriadi",
+    headName: "ASEP NURJAMAN",
     headPhone: "081756677884",
     totalFamilies: 35,
     totalResidents: 130,
@@ -75,7 +75,7 @@ export const initialRTs: RTUnit[] = [
     id: "rt-05",
     rwId: "rw-14",
     rtNumber: "005",
-    headName: "Cecep Rustandi",
+    headName: "DADAN SUPRIATNA",
     headPhone: "081867788995",
     totalFamilies: 40,
     totalResidents: 152,
@@ -84,10 +84,37 @@ export const initialRTs: RTUnit[] = [
     id: "rt-06",
     rwId: "rw-14",
     rtNumber: "006",
-    headName: "Wawan Setiawan",
+    headName: "SOBARIAH IRA SUSILAWATI",
     headPhone: "081978899006",
     totalFamilies: 36,
     totalResidents: 135,
+  },
+  {
+    id: "rt-07",
+    rwId: "rw-14",
+    rtNumber: "007",
+    headName: "ODONG SUHADA",
+    headPhone: "081289900117",
+    totalFamilies: 39,
+    totalResidents: 148,
+  },
+  {
+    id: "rt-08",
+    rwId: "rw-14",
+    rtNumber: "008",
+    headName: "TAUFIK",
+    headPhone: "081390011228",
+    totalFamilies: 41,
+    totalResidents: 155,
+  },
+  {
+    id: "rt-09",
+    rwId: "rw-14",
+    rtNumber: "009",
+    headName: "CHUSNUL CHOTIMAH",
+    headPhone: "081501122339",
+    totalFamilies: 37,
+    totalResidents: 140,
   },
 ];
 
@@ -314,9 +341,9 @@ export const initialLetterRequests: LetterRequest[] = [
     letterOfficialNumber: "470/014/RW.14/VIII/2026",
     submittedAt: "2026-08-15T08:30:00Z",
     rtApprovedAt: "2026-08-15T09:15:00Z",
-    rtApprovedBy: "Dadang Kusnadi (Ketua RT 001)",
+    rtApprovedBy: "DASEP HERIANSYAH (Ketua RT 001)",
     rwApprovedAt: "2026-08-15T10:00:00Z",
-    rwApprovedBy: "H. Asep Suryana, S.E. (Ketua RW 14)",
+    rwApprovedBy: "TAUFIK ABDURAKHMAN (Ketua RW 14)",
     verificationToken: "VERIF-RW14-SKCK-20260814",
   },
   {
@@ -334,7 +361,7 @@ export const initialLetterRequests: LetterRequest[] = [
     status: "MENUNGGU_RW",
     submittedAt: "2026-08-18T11:00:00Z",
     rtApprovedAt: "2026-08-18T13:20:00Z",
-    rtApprovedBy: "Yana Mulyana (Ketua RT 002)",
+    rtApprovedBy: "ASEP ISHAK (Ketua RT 002)",
     verificationToken: "VERIF-RW14-SKU-20260815",
   },
   {
@@ -459,10 +486,10 @@ export const initialCashTransactions: CashTransaction[] = [
     date: "2026-08-05",
     type: "MASUK",
     category: "IURAN_WARGA",
-    title: "Penerimaan Iuran Warga RT 01 s/d RT 06 Gelombang I",
-    description: "Iuran IPL 95 KK via QRIS & Transfer Bank BJB",
-    amount: 9500000,
-    balanceAfter: 24350000,
+    title: "Penerimaan Iuran Warga RT 01 s/d RT 09 Gelombang I",
+    description: "Iuran IPL 150 KK via QRIS & Transfer Bank BJB",
+    amount: 15000000,
+    balanceAfter: 29850000,
     recordedBy: "Hj. Ratna (Bendahara RW)",
   },
   {
@@ -471,10 +498,10 @@ export const initialCashTransactions: CashTransaction[] = [
     date: "2026-08-06",
     type: "KELUAR",
     category: "KEAMANAN_RONDA",
-    title: "Honor Gaji 4 Petugas Satpam & Ronda RW 14 Padasuka",
+    title: "Honor Gaji Petugas Satpam & Ronda RW 14 Padasuka",
     description: "Honor jaga posko 24 jam periode Agustus 2026",
     amount: 6000000,
-    balanceAfter: 18350000,
+    balanceAfter: 23850000,
     recordedBy: "Hj. Ratna (Bendahara RW)",
   },
   {
@@ -486,7 +513,7 @@ export const initialCashTransactions: CashTransaction[] = [
     title: "Retribusi Pengangkutan Truk Sampah DLH Cimahi",
     description: "Pengangkutan sampah rutin 3x seminggu",
     amount: 3200000,
-    balanceAfter: 15150000,
+    balanceAfter: 20650000,
     recordedBy: "Hj. Ratna (Bendahara RW)",
   },
   {
@@ -498,7 +525,7 @@ export const initialCashTransactions: CashTransaction[] = [
     title: "Dana Semarak Kemerdekaan HUT RI ke-81 Karang Taruna RW 14",
     description: "Support dana RW untuk kepanitiaan HUT RI ke-81 Karang Taruna RW 14",
     amount: 2500000,
-    balanceAfter: 12650000,
+    balanceAfter: 18150000,
     recordedBy: "Hj. Ratna (Bendahara RW)",
   },
   {
@@ -508,9 +535,9 @@ export const initialCashTransactions: CashTransaction[] = [
     type: "MASUK",
     category: "KAS_PEMBANGUNAN",
     title: "Donasi Swadaya Perbaikan Lampu PJU & CCTV RW 14",
-    description: "Donasi warga dermawan RT 03 untuk penerangan jalan",
+    description: "Donasi warga dermawan untuk penerangan jalan",
     amount: 3000000,
-    balanceAfter: 15650000,
+    balanceAfter: 21150000,
     recordedBy: "Hj. Ratna (Bendahara RW)",
   },
 ];
@@ -700,12 +727,12 @@ export const initialArticles: Article[] = [
     slug: "kerja-bakti-massal-rw14-padasuka",
     category: "KEGIATAN",
     excerpt: "Seluruh warga RW 14 Padasuka diharapkan berpartisipasi dalam kerja bakti membersihkan drainase, menghias gapura, dan pemasangan umbul-umbul.",
-    content: `Dalam rangka memperingati Hari Ulang Tahun Kemerdekaan Republik Indonesia ke-81, Pengurus RW 14 Padasuka bersama seluruh Pengurus RT 01 s/d RT 06 mengundang seluruh warga untuk mengikuti kegiatan **Kerja Bakti Massal Lingkungan**.
+    content: `Dalam rangka memperingati Hari Ulang Tahun Kemerdekaan Republik Indonesia ke-81, Pengurus RW 14 Padasuka bersama seluruh Pengurus RT 01 s/d RT 09 mengundang seluruh warga untuk mengikuti kegiatan **Kerja Bakti Massal Lingkungan**.
 
 ### Jadwal Pelaksanaan:
 - **Hari / Tanggal**: Minggu, 24 Agustus 2026
 - **Waktu**: Pukul 07.00 WIB s/d selesai
-- **Titik Kumpul**: Balai Warga RW 14 & Pos Ronda masing-masing RT
+- **Titik Kumpul**: Balai Warga RW 14 & Pos Ronda masing-masing RT 01 s/d RT 09
 
 ### Fokus Kegiatan:
 1. Pembersihan saluran drainase air untuk antisipasi musim hujan.
@@ -803,7 +830,7 @@ export const initialEmergencyContacts: EmergencyContact[] = [
   },
   {
     id: "emg-06",
-    name: "Ketua RW 14 (H. Asep Suryana)",
+    name: "Ketua RW 14 (TAUFIK ABDURAKHMAN)",
     role: "Ketua Rukun Warga 14 Padasuka",
     phone: "0813-2211-4414",
     available: "Pelayanan Warga",
