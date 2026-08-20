@@ -77,7 +77,7 @@ export default function AdminLayout({
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-slate-100 flex flex-col lg:flex-row overflow-x-hidden w-full max-w-full">
       
       {/* Mobile Header Bar */}
       <div className="lg:hidden bg-slate-900 text-white px-4 py-3 flex items-center justify-between border-b border-slate-800 z-30">

@@ -14,9 +14,9 @@ import { EmergencyBar } from "@/components/common/EmergencyBar";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-slate-50 overflow-x-hidden w-full max-w-full">
       <Navbar />
-      <main className="flex-1">
+      <main className="flex-1 overflow-x-hidden w-full max-w-full">
         <HeroSection />
         <StatsCounter />
         <ProfileSection />

@@ -26,7 +26,7 @@ export function CashTransparencyWidget() {
   const latestTransactions = [...cashTransactions].reverse().slice(0, 5);
 
   return (
-    <section id="transparansi-kas" className="py-12 sm:py-16 bg-slate-50 border-t border-slate-200">
+    <section id="transparansi-kas" className="py-12 sm:py-16 bg-slate-50 border-t border-slate-200 w-full max-w-full overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}

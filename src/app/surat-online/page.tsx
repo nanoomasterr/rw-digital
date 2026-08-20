@@ -129,7 +129,7 @@ export default function SuratOnlinePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-slate-50 overflow-x-hidden w-full max-w-full">
       <Navbar />
       
       {/* Header Banner */}

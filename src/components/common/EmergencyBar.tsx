@@ -26,7 +26,7 @@ export function EmergencyBar() {
   };
 
   return (
-    <section id="kontak-darurat" className="bg-rose-50 border-y border-rose-200 py-10">
+    <section id="kontak-darurat" className="bg-rose-50 border-y border-rose-200 py-10 w-full max-w-full overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
@@ -47,17 +47,17 @@ export function EmergencyBar() {
           {initialEmergencyContacts.map((contact) => (
             <div
               key={contact.id}
-              className="p-4 rounded-xl bg-white border border-rose-100 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow"
+              className="p-4 rounded-xl bg-white border border-rose-100 shadow-sm flex items-center justify-between gap-2 hover:shadow-md transition-shadow min-w-0"
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 min-w-0">
                 <div className="w-11 h-11 rounded-lg bg-rose-50 flex items-center justify-center shrink-0">
                   {getIcon(contact.icon)}
                 </div>
-                <div>
-                  <h4 className="font-bold text-slate-900 text-sm leading-snug">
+                <div className="min-w-0">
+                  <h4 className="font-bold text-slate-900 text-sm leading-snug truncate">
                     {contact.name}
                   </h4>
-                  <p className="text-xs text-slate-500">{contact.role}</p>
+                  <p className="text-xs text-slate-500 truncate">{contact.role}</p>
                   <span className="inline-block mt-1 text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                     {contact.available}
                   </span>

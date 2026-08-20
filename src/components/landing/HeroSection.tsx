@@ -19,7 +19,7 @@ export function HeroSection() {
   const { rw } = useApp();
 
   return (
-    <section className="bg-slate-900 text-white border-b border-slate-800">
+    <section className="bg-slate-900 text-white border-b border-slate-800 w-full max-w-full overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-18">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           

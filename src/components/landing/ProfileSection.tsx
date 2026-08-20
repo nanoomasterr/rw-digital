@@ -8,7 +8,7 @@ export function ProfileSection() {
   const { rw } = useApp();
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-16 sm:py-20 bg-white w-full max-w-full overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Sambutan Ketua RW & Visi Misi */}
