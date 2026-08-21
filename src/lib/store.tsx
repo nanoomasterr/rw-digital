@@ -80,7 +80,14 @@ interface AppContextType {
   deleteFamily: (id: string) => void;
   
   addUMKM: (data: Omit<UMKMItem, "id">) => void;
+  updateUMKM: (id: string, data: Partial<UMKMItem>) => void;
+  deleteUMKM: (id: string) => void;
   addArticle: (data: Omit<Article, "id" | "publishedAt" | "slug">) => void;
+  updateArticle: (id: string, data: Partial<Article>) => void;
+  deleteArticle: (id: string) => void;
+  addFacility: (data: Omit<Facility, "id">) => void;
+  updateFacility: (id: string, data: Partial<Facility>) => void;
+  deleteFacility: (id: string) => void;
   
   resetToDefault: () => void;
 }
@@ -440,10 +447,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setResidents((prev) => prev.filter((r) => r.familyId !== id));
   };
 
-  // UMKM & Articles
+  // UMKM & Articles & Facilities
   const addUMKM = (data: Omit<UMKMItem, "id">) => {
     const item: UMKMItem = { ...data, id: `umkm-${Date.now()}` };
     setUmkms((prev) => [item, ...prev]);
+  };
+
+  const updateUMKM = (id: string, data: Partial<UMKMItem>) => {
+    setUmkms((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, ...data } : u))
+    );
+  };
+
+  const deleteUMKM = (id: string) => {
+    setUmkms((prev) => prev.filter((u) => u.id !== id));
   };
 
   const addArticle = (data: Omit<Article, "id" | "publishedAt" | "slug">) => {
@@ -458,6 +475,35 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       publishedAt: new Date().toISOString().slice(0, 10),
     };
     setArticles((prev) => [item, ...prev]);
+  };
+
+  const updateArticle = (id: string, data: Partial<Article>) => {
+    setArticles((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, ...data } : a))
+    );
+  };
+
+  const deleteArticle = (id: string) => {
+    setArticles((prev) => prev.filter((a) => a.id !== id));
+  };
+
+  const addFacility = (data: Omit<Facility, "id">) => {
+    const item: Facility = {
+      ...data,
+      id: `fac-${Date.now()}`,
+    };
+    setFacilities((prev) => [...prev, item]);
+  };
+
+  const updateFacility = (id: string, data: Partial<Facility>) => {
+    setFacilities((prev) =>
+      prev.map((f) => (f.id === id ? { ...f, ...data } : f))
+    );
+  };
+
+  const deleteFacility = (id: string) => {
+    setFacilities((prev) => prev.filter((f) => f.id !== id));
+    setFacilityBookings((prev) => prev.filter((b) => b.facilityId !== id));
   };
 
   const resetToDefault = () => {
@@ -513,7 +559,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         updateFamily,
         deleteFamily,
         addUMKM,
+        updateUMKM,
+        deleteUMKM,
         addArticle,
+        updateArticle,
+        deleteArticle,
+        addFacility,
+        updateFacility,
+        deleteFacility,
         resetToDefault,
       }}
     >
